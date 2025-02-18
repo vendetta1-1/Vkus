@@ -48,8 +48,9 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     //exoplayer
+    implementation(libs.media3.common.ktx)
     implementation(libs.media3.exoplayer)
-    implementation(libs.androidx.media3.exoplayer.hls)
+    implementation(libs.media3.exoplayer.hls)
     //default
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

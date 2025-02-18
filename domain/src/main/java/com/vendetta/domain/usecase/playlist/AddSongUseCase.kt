@@ -6,7 +6,7 @@ class AddSongUseCase(
     private val repository: PlaylistRepository
 ) {
 
-    suspend operator fun invoke(uri: String) {
-        repository.addSong(uri)
+    suspend operator fun invoke(path: String) {
+        repository.addSong(path)
     }
 }

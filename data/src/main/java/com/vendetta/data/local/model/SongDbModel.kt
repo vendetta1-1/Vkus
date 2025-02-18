@@ -9,7 +9,7 @@ data class SongDbModel(
     val id: Int,
     val uri: String,
     val durationInMillis: Long,
-    val coverPath: ByteArray,
+    val coverBitmap: ByteArray,
     val songName: String,
     val artistName: String,
     val albumName: String,
@@ -23,7 +23,7 @@ data class SongDbModel(
         if (id != other.id) return false
         if (uri != other.uri) return false
         if (durationInMillis != other.durationInMillis) return false
-        if (!coverPath.contentEquals(other.coverPath)) return false
+        if (!coverBitmap.contentEquals(other.coverBitmap)) return false
         if (songName != other.songName) return false
         if (artistName != other.artistName) return false
         if (albumName != other.albumName) return false
@@ -35,7 +35,7 @@ data class SongDbModel(
         var result = id
         result = 31 * result + uri.hashCode()
         result = 31 * result + durationInMillis.hashCode()
-        result = 31 * result + coverPath.contentHashCode()
+        result = 31 * result + coverBitmap.contentHashCode()
         result = 31 * result + songName.hashCode()
         result = 31 * result + artistName.hashCode()
         result = 31 * result + albumName.hashCode()

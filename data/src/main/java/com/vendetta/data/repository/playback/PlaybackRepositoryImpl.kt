@@ -5,11 +5,11 @@ import com.vendetta.data.service.MusicAction
 import com.vendetta.data.service.MusicForegroundService
 import com.vendetta.domain.repository.PlaybackRepository
 
-class DefaultPlaybackRepository(
+class PlaybackRepositoryImpl(
     private val application: Application
 ) : PlaybackRepository {
 
-    override suspend fun play(songUri: String) {
+    override fun play(songUri: String) {
         application.startForegroundService(
             MusicForegroundService.newIntent(
                 application,
@@ -18,7 +18,7 @@ class DefaultPlaybackRepository(
         )
     }
 
-    override suspend fun pause() {
+    override fun pause() {
         application.startForegroundService(
             MusicForegroundService.newIntent(
                 application,
@@ -27,7 +27,7 @@ class DefaultPlaybackRepository(
         )
     }
 
-    override suspend fun seekToNext() {
+    override fun seekToNext() {
         application.startForegroundService(
             MusicForegroundService.newIntent(
                 application,
@@ -36,7 +36,7 @@ class DefaultPlaybackRepository(
         )
     }
 
-    override suspend fun seekToPrevious() {
+    override fun seekToPrevious() {
         application.startForegroundService(
             MusicForegroundService.newIntent(
                 application,

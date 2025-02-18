@@ -3,11 +3,11 @@ package com.vendetta.domain.repository
 
 interface PlaybackRepository {
 
-  suspend  fun play(songUri: String)
+    fun play(songUri: String)
 
-   suspend fun pause()
+    fun pause()
 
-   suspend fun seekToNext()
+    fun seekToNext()
 
-   suspend fun seekToPrevious()
+    fun seekToPrevious()
 }

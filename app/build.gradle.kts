@@ -52,15 +52,17 @@ dependencies {
     //modules
     implementation(project(":domain"))
     implementation(project(":data"))
+    //decompose
+    implementation(libs.decompose)
+    implementation(libs.decompose.extensions.compose)
     //exoplayer
+    implementation(libs.media3.common.ktx)
     implementation(libs.media3.exoplayer)
-    implementation(libs.androidx.media3.exoplayer.hls)
+    implementation(libs.media3.exoplayer.hls)
     //room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
-    //coil
-    implementation(libs.coil)
     //coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)

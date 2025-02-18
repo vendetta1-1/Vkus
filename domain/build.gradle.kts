@@ -7,6 +7,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 dependencies {
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization)
     implementation(libs.kotlinx.coroutines.core)
 }

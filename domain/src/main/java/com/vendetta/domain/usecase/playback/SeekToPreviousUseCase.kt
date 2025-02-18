@@ -6,7 +6,7 @@ class SeekToPreviousUseCase(
     private val repository: PlaybackRepository
 ) {
 
-    suspend operator fun invoke(){
+    operator fun invoke() {
         repository.seekToPrevious()
     }
 }

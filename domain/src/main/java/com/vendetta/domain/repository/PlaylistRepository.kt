@@ -1,14 +1,14 @@
 package com.vendetta.domain.repository
 
 import com.vendetta.domain.entity.SongEntity
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 
 interface PlaylistRepository {
 
-    fun getSongs(): StateFlow<List<SongEntity>>
+    val songs: Flow<List<SongEntity>>
 
-    suspend fun addSong(uri: String)
+    suspend fun addSong(path: String)
 
-    suspend fun deleteSong(songId: Int)
+    suspend fun deleteSong(song: SongEntity)
 }

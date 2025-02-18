@@ -2,11 +2,11 @@ package com.vendetta.domain.usecase.playback
 
 import com.vendetta.domain.repository.PlaybackRepository
 
-class PlayUseCase(
+class PlaySongUseCase(
     private val repository: PlaybackRepository
 ) {
 
-    suspend operator fun invoke(songUri: String) {
+    operator fun invoke(songUri: String) {
         repository.play(songUri)
     }
 }
