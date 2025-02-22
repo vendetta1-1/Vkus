@@ -1,6 +1,5 @@
 package com.vendetta.domain.repository
 
-
 interface PlaybackRepository {
 
     fun play(songUri: String)

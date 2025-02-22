@@ -6,6 +6,7 @@ import com.vendetta.domain.entity.SongEntity
 fun SongEntity.toDbModel() = SongDbModel(
     id = this.id,
     uri = this.uri,
+    isFavourite = this.isFavourite,
     durationInMillis = this.durationInMillis,
     coverBitmap = this.coverBitmap,
     songName = this.songName,
@@ -16,6 +17,7 @@ fun SongEntity.toDbModel() = SongDbModel(
 fun SongDbModel.toEntity() = SongEntity(
     id = this.id,
     uri = this.uri,
+    isFavourite = this.isFavourite,
     durationInMillis = this.durationInMillis,
     coverBitmap = this.coverBitmap,
     songName = this.songName,

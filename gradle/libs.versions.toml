@@ -5,8 +5,7 @@ coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-coroutines= "1.10.1"
-kotlinxSerializationJson = "1.8.0"
+coroutines = "1.10.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.0"
 composeBom = "2025.02.00"
@@ -20,9 +19,8 @@ material = "1.12.0"
 
 [libraries]
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
-decompose-extensions-compose = {module = "com.arkivanov.decompose:extensions-compose-jetpack", version.ref = "decompose"}
+decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose-jetpack", version.ref = "decompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 media3-exoplayer-hls = { module = "androidx.media3:media3-exoplayer-hls", version.ref = "media3" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
@@ -52,9 +50,9 @@ media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", ver
 
 
 [plugins]
-serialization = {id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
-room = {id = "androidx.room", version.ref = "room"}
-ksp = {id = "com.google.devtools.ksp" , version.ref = "ksp"}
+parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+room = { id = "androidx.room", version.ref = "room" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

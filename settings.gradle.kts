@@ -21,5 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "vkus"
 include(":app")
-include(":domain")
 include(":data")
+include(":domain")

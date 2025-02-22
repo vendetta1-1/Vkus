@@ -8,6 +8,7 @@ data class SongDbModel(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val uri: String,
+    val isFavourite: Boolean,
     val durationInMillis: Long,
     val coverBitmap: ByteArray,
     val songName: String,

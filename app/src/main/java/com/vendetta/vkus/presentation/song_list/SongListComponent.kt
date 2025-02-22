@@ -1,11 +1,13 @@
-package com.vendetta.vkus.presentation.home
+package com.vendetta.vkus.presentation.song_list
 
 import com.vendetta.domain.entity.SongEntity
 import kotlinx.coroutines.flow.StateFlow
 
-interface HomeComponent {
+interface SongListComponent {
 
     val model: StateFlow<Model>
+
+    fun changeLikeStatus(song: SongEntity)
 
     fun deleteSong(song: SongEntity)
 

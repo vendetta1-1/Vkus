@@ -53,6 +53,10 @@ class MusicForegroundService : Service() {
         return START_STICKY
     }
 
+    enum class MusicAction {
+        Play, Pause, Next, Previous
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         exoPlayer.release()

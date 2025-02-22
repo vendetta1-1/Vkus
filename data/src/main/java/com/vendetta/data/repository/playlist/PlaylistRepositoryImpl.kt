@@ -4,7 +4,9 @@ import android.media.MediaMetadataRetriever
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.vendetta.data.local.db.MusicDao
+import com.vendetta.data.local.model.SongDbModel
 import com.vendetta.data.mapper.toDbModel
+import com.vendetta.data.mapper.toEntity
 import com.vendetta.domain.entity.SongEntity
 import com.vendetta.domain.repository.PlaylistRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,9 +19,7 @@ class PlaylistRepositoryImpl(
     private val musicDao: MusicDao
 ) : PlaylistRepository {
 
-    private val _songList = mutableListOf<SongEntity>()
-    private val songList: List<SongEntity> = _songList
-
+    private val songsList = musicDao.getSongs().toMutableList()
 
     private val songListChangeEvents = MutableSharedFlow<Unit>(replay = 1).apply {
         tryEmit(Unit)
@@ -27,15 +27,26 @@ class PlaylistRepositoryImpl(
 
     override val songs: Flow<List<SongEntity>> = flow {
         songListChangeEvents.collect {
-            emit(songList)
+            emit(songsList.toEntity())
         }
+    }
+    override val favouriteSongs: Flow<List<SongEntity>> = flow {
+        songListChangeEvents.collect {
+            emit(songsList.filter { it.isFavourite }.toEntity())
+        }
+    }
+
+    override suspend fun changeLikeStatus(song: SongEntity) {
+        musicDao.addSong(song.copy(isFavourite = !song.isFavourite).toDbModel())
+        songListChangeEvents.tryEmit(Unit)
     }
 
     override suspend fun addSong(path: String) {
         retriever.setDataSource(path)
-        val songEntity = SongEntity(
-            id = songList.size,
+        val song = SongDbModel(
+            id = songsList.size,
             uri = path,
+            isFavourite = false,
             durationInMillis = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 ?.toLong() ?: throw RuntimeException("duration == null"),
             coverBitmap = retriever.embeddedPicture ?: throw RuntimeException("cover == null"),
@@ -46,16 +57,14 @@ class PlaylistRepositoryImpl(
             albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
                 ?: throw RuntimeException("albumName == null")
         )
-
-        musicDao.addSong(songEntity.toDbModel())
-        _songList[songEntity.id] = songEntity
+        musicDao.addSong(song)
+        songsList[song.id] = song
         songListChangeEvents.tryEmit(Unit)
     }
 
     override suspend fun deleteSong(song: SongEntity) {
         musicDao.deleteSong(song.id)
-        _songList.remove(song)
+        songsList.remove(song.toDbModel())
         songListChangeEvents.tryEmit(Unit)
     }
-
 }

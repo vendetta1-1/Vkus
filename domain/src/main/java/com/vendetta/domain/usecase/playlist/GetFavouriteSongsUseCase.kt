@@ -2,11 +2,13 @@ package com.vendetta.domain.usecase.playlist
 
 import com.vendetta.domain.entity.SongEntity
 import com.vendetta.domain.repository.PlaylistRepository
+import kotlinx.coroutines.flow.Flow
 
-class DeleteSongUseCase(
+class GetFavouriteSongsUseCase(
     private val repository: PlaylistRepository
 ) {
-    suspend operator fun invoke(song: SongEntity) {
-        repository.deleteSong(song)
+
+    operator fun invoke(): Flow<List<SongEntity>> {
+        return repository.favouriteSongs
     }
 }

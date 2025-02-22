@@ -1,9 +1,10 @@
-package com.vendetta.vkus.presentation.home
+package com.vendetta.vkus.presentation.song_list
 
 import com.arkivanov.decompose.ComponentContext
 import com.vendetta.domain.entity.SongEntity
 import com.vendetta.domain.usecase.playback.PlaySongUseCase
 import com.vendetta.domain.usecase.playlist.AddSongUseCase
+import com.vendetta.domain.usecase.playlist.ChangeLikeStatusUseCase
 import com.vendetta.domain.usecase.playlist.DeleteSongUseCase
 import com.vendetta.domain.usecase.playlist.GetSongsUseCase
 import com.vendetta.vkus.core.componentScope
@@ -13,23 +14,30 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class DefaultHomeComponent(
+class DefaultSongListComponent(
     componentContext: ComponentContext,
-    private val getSongsUseCase: GetSongsUseCase,
+    getSongsUseCase: GetSongsUseCase,
+    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
     private val addSongUseCase: AddSongUseCase,
     private val deleteSongUseCase: DeleteSongUseCase,
     private val playSongUseCase: PlaySongUseCase
-) : HomeComponent, ComponentContext by componentContext {
+) : SongListComponent, ComponentContext by componentContext {
 
     private val scope = componentScope()
 
-    override val model: StateFlow<HomeComponent.Model> = getSongsUseCase()
-        .map { HomeComponent.Model(it) }
+    override val model: StateFlow<SongListComponent.Model> = getSongsUseCase()
+        .map { SongListComponent.Model(it) }
         .stateIn(
             scope = scope,
             started = SharingStarted.Lazily,
-            initialValue = HomeComponent.Model(listOf())
+            initialValue = SongListComponent.Model(listOf())
         )
+
+    override fun changeLikeStatus(song: SongEntity) {
+        scope.launch {
+            changeLikeStatusUseCase(song)
+        }
+    }
 
     override fun deleteSong(song: SongEntity) {
         scope.launch {

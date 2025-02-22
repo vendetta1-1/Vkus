@@ -1,7 +1,6 @@
 package com.vendetta.data.repository.playback
 
 import android.app.Application
-import com.vendetta.data.service.MusicAction
 import com.vendetta.data.service.MusicForegroundService
 import com.vendetta.domain.repository.PlaybackRepository
 
@@ -22,7 +21,7 @@ class PlaybackRepositoryImpl(
         application.startForegroundService(
             MusicForegroundService.newIntent(
                 application,
-                MusicAction.Pause
+                MusicForegroundService.MusicAction.Pause
             )
         )
     }
@@ -31,7 +30,7 @@ class PlaybackRepositoryImpl(
         application.startForegroundService(
             MusicForegroundService.newIntent(
                 application,
-                MusicAction.Next
+                MusicForegroundService.MusicAction.Next
             )
         )
     }
@@ -40,7 +39,7 @@ class PlaybackRepositoryImpl(
         application.startForegroundService(
             MusicForegroundService.newIntent(
                 application,
-                MusicAction.Previous
+                MusicForegroundService.MusicAction.Previous
             )
         )
     }
