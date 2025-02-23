@@ -1,57 +1,52 @@
 package com.vendetta.vkus.presentation.song_list
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.mvikotlin.core.instancekeeper.getStore
+import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.domain.usecase.playback.PlaySongUseCase
-import com.vendetta.domain.usecase.playlist.AddSongUseCase
-import com.vendetta.domain.usecase.playlist.ChangeLikeStatusUseCase
-import com.vendetta.domain.usecase.playlist.DeleteSongUseCase
-import com.vendetta.domain.usecase.playlist.GetSongsUseCase
 import com.vendetta.vkus.core.componentScope
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DefaultSongListComponent(
+    private val storeFactory: SongListStoreFactory,
+    private val onAddSong: (String) -> Unit,
     componentContext: ComponentContext,
-    getSongsUseCase: GetSongsUseCase,
-    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
-    private val addSongUseCase: AddSongUseCase,
-    private val deleteSongUseCase: DeleteSongUseCase,
-    private val playSongUseCase: PlaySongUseCase
 ) : SongListComponent, ComponentContext by componentContext {
 
+    private val store = instanceKeeper.getStore { storeFactory.create() }
     private val scope = componentScope()
 
-    override val model: StateFlow<SongListComponent.Model> = getSongsUseCase()
-        .map { SongListComponent.Model(it) }
-        .stateIn(
-            scope = scope,
-            started = SharingStarted.Lazily,
-            initialValue = SongListComponent.Model(listOf())
-        )
+    init {
+        scope.launch {
+            store.labels.collect {
+                when (it) {
+                    is SongListStore.Label.AddSong -> {
+                        onAddSong(it.path)
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val model: StateFlow<SongListStore.State> = store.stateFlow
 
     override fun changeLikeStatus(song: SongEntity) {
-        scope.launch {
-            changeLikeStatusUseCase(song)
-        }
+        store.accept(SongListStore.Intent.ChangeLikeStatus(song))
     }
 
     override fun deleteSong(song: SongEntity) {
-        scope.launch {
-            deleteSongUseCase(song)
-        }
+        store.accept(SongListStore.Intent.DeleteSong(song))
     }
 
     override fun addSong(path: String) {
-        scope.launch {
-            addSongUseCase(path)
-        }
+        store.accept(SongListStore.Intent.AddSong(path))
     }
 
-    override fun playSong(songUri: String) {
-        playSongUseCase(songUri)
+    override fun playSong(path: String) {
+        store.accept(SongListStore.Intent.PlaySong(path))
     }
 }

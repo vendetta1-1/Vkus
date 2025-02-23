@@ -1,6 +1,7 @@
 package com.vendetta.data.repository.playlist
 
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.vendetta.data.local.db.MusicDao
@@ -41,11 +42,11 @@ class PlaylistRepositoryImpl(
         songListChangeEvents.tryEmit(Unit)
     }
 
-    override suspend fun addSong(path: String) {
-        retriever.setDataSource(path)
+    override suspend fun addSong(uri: Uri) {
+        retriever.setDataSource(uri)
         val song = SongDbModel(
             id = songsList.size,
-            uri = path,
+            uri = uri,
             isFavourite = false,
             durationInMillis = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 ?.toLong() ?: throw RuntimeException("duration == null"),

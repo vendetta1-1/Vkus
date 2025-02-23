@@ -1,5 +1,6 @@
 package com.vendetta.domain.repository
 
+import android.net.Uri
 import com.vendetta.domain.entity.SongEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -11,7 +12,7 @@ interface PlaylistRepository {
 
     suspend fun changeLikeStatus(song: SongEntity)
 
-    suspend fun addSong(path: String)
+    suspend fun addSong(uri: Uri)
 
     suspend fun deleteSong(song: SongEntity)
 }

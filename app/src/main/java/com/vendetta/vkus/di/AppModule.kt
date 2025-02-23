@@ -2,6 +2,8 @@ package com.vendetta.vkus.di
 
 import android.media.MediaMetadataRetriever
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.mvikotlin.core.store.StoreFactory
+import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import com.vendetta.data.local.db.AppDatabase
 import com.vendetta.data.local.db.MusicDao
 import com.vendetta.data.repository.playback.PlaybackRepositoryImpl
@@ -18,10 +20,11 @@ import com.vendetta.domain.usecase.playlist.ChangeLikeStatusUseCase
 import com.vendetta.domain.usecase.playlist.DeleteSongUseCase
 import com.vendetta.domain.usecase.playlist.GetFavouriteSongsUseCase
 import com.vendetta.domain.usecase.playlist.GetSongsUseCase
-import com.vendetta.vkus.presentation.song_list.DefaultSongListComponent
-import com.vendetta.vkus.presentation.song_list.SongListComponent
 import com.vendetta.vkus.presentation.player.DefaultPlayerComponent
 import com.vendetta.vkus.presentation.player.PlayerComponent
+import com.vendetta.vkus.presentation.song_list.DefaultSongListComponent
+import com.vendetta.vkus.presentation.song_list.SongListComponent
+import com.vendetta.vkus.presentation.song_list.SongListStoreFactory
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -61,17 +64,30 @@ val appModule = module {
             application = androidApplication()
         )
     }
+    
+    factoryOf<StoreFactory>(::DefaultStoreFactory)
 
-    factory<SongListComponent> { (componentContext: ComponentContext) ->
+    //SongList
+    factory<SongListComponent> { (componentContext: ComponentContext, onAddSong: (String) -> Unit) ->
         DefaultSongListComponent(
-            getSongsUseCase = get(),
-            addSongUseCase = get(),
-            deleteSongUseCase = get(),
-            playSongUseCase = get(),
-            componentContext = componentContext
+            componentContext = componentContext,
+            storeFactory = get(),
+            onAddSong = onAddSong
         )
     }
 
+    single<SongListStoreFactory> {
+        SongListStoreFactory(
+            storeFactory = get(),
+            getSongsUseCase = get(),
+            playSongUseCase = get(),
+            deleteSongUseCase = get(),
+            addSongUseCase = get(),
+            changeLikeStatusUseCase = get()
+        )
+    }
+
+    //Player
     factory<PlayerComponent> { (componentContext: ComponentContext, song: SongEntity) ->
         DefaultPlayerComponent(
             componentContext = componentContext,

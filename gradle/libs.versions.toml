@@ -13,13 +13,17 @@ media3 = "1.5.1"
 ksp = "2.1.10-1.0.29"
 room = "2.6.1"
 koin = "4.0.2"
-decompose = "2.1.2"
+decompose = "3.2.2"
 appcompat = "1.7.0"
 material = "1.12.0"
+mviKotlin = "4.3.0"
 
 [libraries]
+mviKotlin = { module = "com.arkivanov.mvikotlin:mvikotlin", version.ref = "mviKotlin" }
+mviKotlin-main = { module = "com.arkivanov.mvikotlin:mvikotlin-main", version.ref = "mviKotlin" }
+mviKotlin-coroutines = { module = "com.arkivanov.mvikotlin:mvikotlin-extensions-coroutines", version.ref = "mviKotlin" }
 decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
-decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose-jetpack", version.ref = "decompose" }
+decompose-extensions-compose = { module = "com.arkivanov.decompose:extensions-compose", version.ref = "decompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 media3-exoplayer-hls = { module = "androidx.media3:media3-exoplayer-hls", version.ref = "media3" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }

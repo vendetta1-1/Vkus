@@ -5,13 +5,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface FavouriteComponent {
 
-    val favouriteSongs: StateFlow<Model>
+    val favouriteSongs: StateFlow<FavouriteStore.State>
 
     fun changeLikeStatus(song: SongEntity)
 
     fun playSong(songUri: String)
 
-    data class Model(
-        val songs: List<SongEntity>
-    )
 }

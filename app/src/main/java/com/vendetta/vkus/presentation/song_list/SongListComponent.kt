@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface SongListComponent {
 
-    val model: StateFlow<Model>
+    val model: StateFlow<SongListStore.State>
 
     fun changeLikeStatus(song: SongEntity)
 
@@ -13,9 +13,7 @@ interface SongListComponent {
 
     fun addSong(path: String)
 
-    fun playSong(songUri: String)
+    fun playSong(path: String)
 
-    data class Model(
-        val songs: List<SongEntity>
-    )
+
 }

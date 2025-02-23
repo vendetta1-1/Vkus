@@ -53,6 +53,10 @@ dependencies {
     //modules
     implementation(project(":domain"))
     implementation(project(":data"))
+    //mvi
+    implementation(libs.mviKotlin)
+    implementation(libs.mviKotlin.main)
+    implementation(libs.mviKotlin.coroutines)
     //decompose
     implementation(libs.decompose)
     implementation(libs.decompose.extensions.compose)

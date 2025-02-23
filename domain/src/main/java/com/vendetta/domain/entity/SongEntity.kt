@@ -1,12 +1,13 @@
 package com.vendetta.domain.entity
 
+import android.net.Uri
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SongEntity(
     val id: Int,
-    val uri: String,
+    val uri: Uri,
     val isFavourite: Boolean,
     val durationInMillis: Long,
     val coverBitmap: ByteArray,
