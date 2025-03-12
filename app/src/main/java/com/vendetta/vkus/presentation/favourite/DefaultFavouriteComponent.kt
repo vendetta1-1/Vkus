@@ -9,20 +9,19 @@ import kotlinx.coroutines.flow.StateFlow
 
 class DefaultFavouriteComponent(
     componentContext: ComponentContext,
-    private val favouriteStoreFactory: FavouriteStoreFactory
+    private val favouriteStoreFactory: FavouriteFactory
 ) : FavouriteComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore { favouriteStoreFactory.create() }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val favouriteSongs: StateFlow<FavouriteStore.State> = store.stateFlow
+    override val model: StateFlow<FavouriteStore.State> = store.stateFlow
 
     override fun changeLikeStatus(song: SongEntity) {
         store.accept(FavouriteStore.Intent.ChangeLikeStatus(song))
     }
 
-    override fun playSong(songUri: String) {
-        store.accept(FavouriteStore.Intent.PlaySong(songUri))
+    override fun playSong(song: SongEntity) {
+        store.accept(FavouriteStore.Intent.PlaySong(song))
     }
-
 }

@@ -1,7 +1,7 @@
 package com.vendetta.domain.usecase.playlist
 
 import android.net.Uri
-import com.vendetta.domain.repository.PlaylistRepository
+import com.vendetta.domain.repository.playlist.PlaylistRepository
 
 
 class AddSongUseCase(

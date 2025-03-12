@@ -1,20 +1,143 @@
 package com.vendetta.vkus.presentation.favourite
 
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
+import com.arkivanov.mvikotlin.core.store.StoreFactory
+import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
+import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vendetta.domain.entity.SongEntity
+import com.vendetta.domain.usecase.playback.PlaySongUseCase
+import com.vendetta.domain.usecase.playlist.ChangeLikeStatusUseCase
+import com.vendetta.domain.usecase.playlist.GetSongsUseCase
+import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.AddSong
+import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.ChangeLikeStatus
+import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.DeleteSong
+import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.PlaySong
+import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.SongsLoaded
+import com.vendetta.vkus.presentation.favourite.FavouriteStore.Intent
+import com.vendetta.vkus.presentation.favourite.FavouriteStore.State
+import kotlinx.coroutines.launch
 
-interface FavouriteStore :
-    Store<FavouriteStore.Intent, FavouriteStore.State, Nothing> {
+interface FavouriteStore : Store<Intent, State, Nothing> {
 
     data class State(
-        val songs: List<SongEntity>,
-        val nowPlayingPath: String? = null
+        val songs: List<SongEntity> = listOf(),
+        val nowPlayingSong: SongEntity? = null
     )
 
     sealed interface Intent {
+        data class PlaySong(val song: SongEntity) : Intent
         data class ChangeLikeStatus(val song: SongEntity) : Intent
-        data class PlaySong(val path: String) : Intent
     }
 
+}
 
+class FavouriteFactory(
+    private val storeFactory: StoreFactory,
+    private val getSongsUseCase: GetSongsUseCase,
+    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
+    private val playSongUseCase: PlaySongUseCase
+)  {
+
+
+    fun create(): FavouriteStore = object : FavouriteStore,
+        Store<Intent, State, Nothing> by storeFactory.create(
+            name = STORE_NAME,
+            initialState = State(),
+            reducer = ReducerImpl,
+            executorFactory = ::Executor,
+            bootstrapper = BootstrapperImpl()
+        ) {}
+
+    private sealed interface Action {
+        data class SongsLoaded(val songs: List<SongEntity>) : Action
+    }
+
+    private sealed interface Message {
+        data class SongsLoaded(val songs: List<SongEntity>) : Message
+        data class PlaySong(val song: SongEntity) : Message
+        data class DeleteSong(val song: SongEntity) : Message
+        data class ChangeLikeStatus(val song: SongEntity) : Message
+        data class AddSong(val song: SongEntity) : Message
+    }
+
+    private inner class BootstrapperImpl : CoroutineBootstrapper<Action>() {
+
+        override fun invoke() {
+            scope.launch {
+                getSongsUseCase().collect {
+                    dispatch(Action.SongsLoaded(it))
+                }
+            }
+        }
+    }
+
+    private inner class Executor :
+        CoroutineExecutor<Intent, Action, State, Message, Nothing>() {
+
+        override fun executeAction(action: Action) {
+            when (action) {
+                is Action.SongsLoaded -> {
+                    dispatch(SongsLoaded(action.songs))
+                }
+            }
+        }
+
+        override fun executeIntent(intent: Intent) {
+            when (intent) {
+                is Intent.ChangeLikeStatus -> {
+                    scope.launch {
+                        changeLikeStatusUseCase(intent.song)
+                    }
+                    dispatch(ChangeLikeStatus(intent.song))
+                }
+
+                is Intent.PlaySong -> {
+                    playSongUseCase(intent.song)
+                    dispatch(PlaySong(intent.song))
+                }
+            }
+        }
+    }
+
+    private object ReducerImpl : Reducer<State, Message> {
+
+        override fun State.reduce(msg: Message): State {
+            return when (msg) {
+                is ChangeLikeStatus -> {
+                    copy()
+                }
+
+                is DeleteSong -> {
+                    copy(
+                        songs = this.songs.toMutableList().apply {
+                            remove(msg.song)
+                        }
+                    )
+                }
+
+                is PlaySong -> {
+                    copy(nowPlayingSong = msg.song)
+                }
+
+                is SongsLoaded -> {
+                    copy(songs = msg.songs)
+                }
+
+                is AddSong -> {
+                    copy(
+                        songs = this.songs.toMutableList().apply {
+                            add(msg.song)
+                        }
+                    )
+                }
+            }
+
+        }
+    }
+
+    private companion object {
+        const val STORE_NAME = "FavouriteStore"
+    }
 }

@@ -43,6 +43,11 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    //gson
+    implementation(libs.gson)
+    //koin
+    runtimeOnly(libs.koin.core)
+    implementation(libs.koin.android)
     //room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)

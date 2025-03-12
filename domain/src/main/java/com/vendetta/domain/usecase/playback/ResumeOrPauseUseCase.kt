@@ -1,12 +1,11 @@
 package com.vendetta.domain.usecase.playback
 
-import com.vendetta.domain.repository.PlaybackRepository
+import com.vendetta.domain.repository.playback.PlaybackRepository
 
-class PauseUseCase(
+class ResumeOrPauseUseCase(
     private val repository: PlaybackRepository
 ) {
-
     operator fun invoke() {
-        repository.pause()
+        repository.resumeOrPause()
     }
 }

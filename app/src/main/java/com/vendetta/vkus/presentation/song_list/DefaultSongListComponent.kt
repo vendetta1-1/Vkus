@@ -1,5 +1,6 @@
 package com.vendetta.vkus.presentation.song_list
 
+import android.net.Uri
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
@@ -11,25 +12,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class DefaultSongListComponent(
-    private val storeFactory: SongListStoreFactory,
-    private val onAddSong: (String) -> Unit,
+    private val songListStoreFactory: SongListFactory,
     componentContext: ComponentContext,
 ) : SongListComponent, ComponentContext by componentContext {
 
-    private val store = instanceKeeper.getStore { storeFactory.create() }
-    private val scope = componentScope()
-
-    init {
-        scope.launch {
-            store.labels.collect {
-                when (it) {
-                    is SongListStore.Label.AddSong -> {
-                        onAddSong(it.path)
-                    }
-                }
-            }
-        }
-    }
+    private val store = instanceKeeper.getStore { songListStoreFactory.create() }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val model: StateFlow<SongListStore.State> = store.stateFlow
@@ -42,11 +29,12 @@ class DefaultSongListComponent(
         store.accept(SongListStore.Intent.DeleteSong(song))
     }
 
-    override fun addSong(path: String) {
-        store.accept(SongListStore.Intent.AddSong(path))
+    override fun addSong(uri: Uri) {
+        store.accept(SongListStore.Intent.AddSong(uri))
     }
 
-    override fun playSong(path: String) {
-        store.accept(SongListStore.Intent.PlaySong(path))
+    override fun playSong(song: SongEntity) {
+        store.accept(SongListStore.Intent.PlaySong(song))
     }
+
 }

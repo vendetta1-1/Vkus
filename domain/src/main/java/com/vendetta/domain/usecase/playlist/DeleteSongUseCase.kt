@@ -1,7 +1,7 @@
 package com.vendetta.domain.usecase.playlist
 
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.domain.repository.PlaylistRepository
+import com.vendetta.domain.repository.playlist.PlaylistRepository
 
 class DeleteSongUseCase(
     private val repository: PlaylistRepository

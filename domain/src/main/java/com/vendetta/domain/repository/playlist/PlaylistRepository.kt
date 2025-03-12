@@ -1,4 +1,4 @@
-package com.vendetta.domain.repository
+package com.vendetta.domain.repository.playlist
 
 import android.net.Uri
 import com.vendetta.domain.entity.SongEntity
