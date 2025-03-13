@@ -5,13 +5,11 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.domain.usecase.playback.ResumeOrPauseUseCase
-import com.vendetta.domain.usecase.playback.SeekToNextUseCase
-import com.vendetta.domain.usecase.playback.SeekToPreviousUseCase
-import com.vendetta.domain.usecase.playlist.ChangeLikeStatusUseCase
+import com.vendetta.domain.usecase.ChangeLikeStatusUseCase
 import com.vendetta.vkus.presentation.player.PlayerStore.Intent
 import com.vendetta.vkus.presentation.player.PlayerStore.State
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 interface PlayerStore : Store<Intent, State, Nothing> {
 
@@ -25,7 +23,7 @@ interface PlayerStore : Store<Intent, State, Nothing> {
     )
 
     sealed interface Intent {
-        data object ChangeLikeStatus : Intent
+        data class ChangeLikeStatus(val song: SongEntity) : Intent
         data object ResumeOrPause : Intent
         data class SeekToNext(val nextSong: SongEntity) : Intent
         data class SeekToPrevious(val previousSong: SongEntity) : Intent
@@ -33,12 +31,9 @@ interface PlayerStore : Store<Intent, State, Nothing> {
     }
 }
 
-class PlayerFactory(
+class PlayerFactory @Inject constructor(
     private val storeFactory: StoreFactory,
     private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
-    private val resumeOrPauseUseCase: ResumeOrPauseUseCase,
-    private val seekToNextUseCase: SeekToNextUseCase,
-    private val seekToPreviousUseCase: SeekToPreviousUseCase
 ) {
 
     fun create(song: SongEntity, nextSong: SongEntity, previousSong: SongEntity): PlayerStore =
@@ -69,31 +64,22 @@ class PlayerFactory(
 
         override fun executeIntent(intent: Intent) {
             when (intent) {
-                Intent.ChangeLikeStatus -> {
+                is Intent.ChangeLikeStatus -> {
                     scope.launch {
-                        changeLikeStatusUseCase(state().nowPlaying)
+                        changeLikeStatusUseCase(intent.song)
                     }
                     dispatch(Message.ChangeLikeStatus)
                 }
 
                 Intent.ResumeOrPause -> {
-                    scope.launch {
-                        resumeOrPauseUseCase()
-                    }
                     dispatch(Message.ResumeOrPause)
                 }
 
                 is Intent.SeekToNext -> {
-                    scope.launch {
-                        seekToNextUseCase()
-                    }
                     dispatch(Message.SeekToNext(state().nextSong))
                 }
 
                 is Intent.SeekToPrevious -> {
-                    scope.launch {
-                        seekToPreviousUseCase()
-                    }
                     dispatch(Message.SeekToPrevious(state().previousSong))
                 }
             }

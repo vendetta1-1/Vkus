@@ -1,10 +1,11 @@
-package com.vendetta.domain.usecase.playlist
+package com.vendetta.domain.usecase
 
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.domain.repository.playlist.PlaylistRepository
+import com.vendetta.domain.repository.PlaylistRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class GetFavouriteSongsUseCase(
+class GetFavouriteSongsUseCase @Inject constructor(
     private val repository: PlaylistRepository
 ) {
 

@@ -21,9 +21,6 @@ interface RootComponent {
         data class Favourite(val component: FavouriteComponent) : Child
         data class Player(
             val component: PlayerComponent,
-            val currentSong: SongEntity,
-            val nextSong: SongEntity,
-            val previousSong: SongEntity
         ) : Child
 
         data class SongList(val component: SongListComponent) : Child

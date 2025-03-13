@@ -7,14 +7,14 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.domain.usecase.playback.PlaySongUseCase
-import com.vendetta.domain.usecase.playlist.AddSongUseCase
-import com.vendetta.domain.usecase.playlist.ChangeLikeStatusUseCase
-import com.vendetta.domain.usecase.playlist.DeleteSongUseCase
-import com.vendetta.domain.usecase.playlist.GetSongsUseCase
+import com.vendetta.domain.usecase.AddSongUseCase
+import com.vendetta.domain.usecase.ChangeLikeStatusUseCase
+import com.vendetta.domain.usecase.DeleteSongUseCase
+import com.vendetta.domain.usecase.GetSongsUseCase
 import com.vendetta.vkus.presentation.song_list.SongListStore.Intent
 import com.vendetta.vkus.presentation.song_list.SongListStore.State
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 interface SongListStore : Store<Intent, State, Nothing> {
 
@@ -32,13 +32,12 @@ interface SongListStore : Store<Intent, State, Nothing> {
 
 }
 
-class SongListFactory(
+class SongListFactory @Inject constructor(
     private val storeFactory: StoreFactory,
     private val getSongsUseCase: GetSongsUseCase,
     private val deleteSongUseCase: DeleteSongUseCase,
     private val addSongUseCase: AddSongUseCase,
-    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
-    private val playSongUseCase: PlaySongUseCase
+    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase
 ) {
 
     fun create(): SongListStore = object : SongListStore,
@@ -101,7 +100,6 @@ class SongListFactory(
                 }
 
                 is Intent.PlaySong -> {
-                    playSongUseCase(intent.song)
                     dispatch(Message.PlaySong(intent.song))
                 }
 

@@ -46,10 +46,7 @@ fun RootContent(
                 is RootComponent.Child.Player -> {
                     PlayerContent(
                         component = instance.component,
-                        paddingValues = values,
-                        currentSong = instance.currentSong,
-                        previousSong = instance.previousSong,
-                        nextSong = instance.nextSong
+                        paddingValues = values
                     )
                 }
 

@@ -45,9 +45,6 @@ dependencies {
     implementation(project(":domain"))
     //gson
     implementation(libs.gson)
-    //koin
-    runtimeOnly(libs.koin.core)
-    implementation(libs.koin.android)
     //room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
@@ -57,6 +54,7 @@ dependencies {
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
     //default
+    implementation(libs.javax.inject)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

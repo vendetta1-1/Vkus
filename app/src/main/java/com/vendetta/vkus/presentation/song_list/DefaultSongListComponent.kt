@@ -3,17 +3,17 @@ package com.vendetta.vkus.presentation.song_list
 import android.net.Uri
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
-import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.vkus.core.componentScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
-class DefaultSongListComponent(
+class DefaultSongListComponent @AssistedInject constructor(
     private val songListStoreFactory: SongListFactory,
-    componentContext: ComponentContext,
+    @Assisted("componentContext") componentContext: ComponentContext,
 ) : SongListComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore { songListStoreFactory.create() }
@@ -37,4 +37,10 @@ class DefaultSongListComponent(
         store.accept(SongListStore.Intent.PlaySong(song))
     }
 
+    @AssistedFactory
+    interface Factory {
+        fun crete(
+            @Assisted("componentContext") componentContext: ComponentContext
+        ): DefaultSongListComponent
+    }
 }

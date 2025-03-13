@@ -1,15 +1,13 @@
 package com.vendetta.vkus.presentation.favourite
 
-import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.domain.usecase.playback.PlaySongUseCase
-import com.vendetta.domain.usecase.playlist.ChangeLikeStatusUseCase
-import com.vendetta.domain.usecase.playlist.GetSongsUseCase
+import com.vendetta.domain.usecase.ChangeLikeStatusUseCase
+import com.vendetta.domain.usecase.GetFavouriteSongsUseCase
 import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.AddSong
 import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.ChangeLikeStatus
 import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.DeleteSong
@@ -18,6 +16,7 @@ import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.SongsLo
 import com.vendetta.vkus.presentation.favourite.FavouriteStore.Intent
 import com.vendetta.vkus.presentation.favourite.FavouriteStore.State
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 interface FavouriteStore : Store<Intent, State, Nothing> {
 
@@ -33,12 +32,11 @@ interface FavouriteStore : Store<Intent, State, Nothing> {
 
 }
 
-class FavouriteFactory(
+class FavouriteFactory @Inject constructor(
     private val storeFactory: StoreFactory,
-    private val getSongsUseCase: GetSongsUseCase,
-    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
-    private val playSongUseCase: PlaySongUseCase
-)  {
+    private val getFavouriteSongsUseCase: GetFavouriteSongsUseCase,
+    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase
+) {
 
 
     fun create(): FavouriteStore = object : FavouriteStore,
@@ -66,7 +64,7 @@ class FavouriteFactory(
 
         override fun invoke() {
             scope.launch {
-                getSongsUseCase().collect {
+                getFavouriteSongsUseCase().collect {
                     dispatch(Action.SongsLoaded(it))
                 }
             }
@@ -94,7 +92,6 @@ class FavouriteFactory(
                 }
 
                 is Intent.PlaySong -> {
-                    playSongUseCase(intent.song)
                     dispatch(PlaySong(intent.song))
                 }
             }

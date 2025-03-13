@@ -9,16 +9,17 @@ import com.vendetta.data.local.model.SongDbModel
 import com.vendetta.data.mapper.toDbModel
 import com.vendetta.data.mapper.toEntity
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.domain.repository.playlist.PlaylistRepository
+import com.vendetta.domain.repository.PlaylistRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @OptIn(UnstableApi::class)
-class PlaylistRepositoryImpl(
+class PlaylistRepositoryImpl @Inject constructor(
     private val retriever: MediaMetadataRetriever,
     private val musicDao: MusicDao
 ) : PlaylistRepository {

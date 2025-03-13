@@ -1,9 +1,10 @@
-package com.vendetta.domain.usecase.playlist
+package com.vendetta.domain.usecase
 
 import com.vendetta.domain.entity.SongEntity
-import com.vendetta.domain.repository.playlist.PlaylistRepository
+import com.vendetta.domain.repository.PlaylistRepository
+import javax.inject.Inject
 
-class ChangeLikeStatusUseCase(
+class ChangeLikeStatusUseCase @Inject constructor(
     private val repository: PlaylistRepository
 ) {
 

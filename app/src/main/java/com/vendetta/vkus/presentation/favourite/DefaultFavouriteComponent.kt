@@ -4,12 +4,15 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.vendetta.domain.entity.SongEntity
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 
-class DefaultFavouriteComponent(
-    componentContext: ComponentContext,
-    private val favouriteStoreFactory: FavouriteFactory
+class DefaultFavouriteComponent @AssistedInject constructor(
+    private val favouriteStoreFactory: FavouriteFactory,
+    @Assisted("componentContext") componentContext: ComponentContext
 ) : FavouriteComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore { favouriteStoreFactory.create() }
@@ -23,5 +26,12 @@ class DefaultFavouriteComponent(
 
     override fun playSong(song: SongEntity) {
         store.accept(FavouriteStore.Intent.PlaySong(song))
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("componentContext") componentContext: ComponentContext
+        ): DefaultFavouriteComponent
     }
 }

@@ -4,14 +4,17 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.vendetta.domain.entity.SongEntity
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 
-class DefaultPlayerComponent(
-    componentContext: ComponentContext,
-    private val currentSong: SongEntity,
-    private val nextSong: SongEntity,
-    private val previousSong: SongEntity,
+class DefaultPlayerComponent @AssistedInject constructor(
+    @Assisted("componentContext") componentContext: ComponentContext,
+    @Assisted("currentSong") private val currentSong: SongEntity,
+    @Assisted("nextSong") private val nextSong: SongEntity,
+    @Assisted("previousSong") private val previousSong: SongEntity,
     private val playerStoreFactory: PlayerFactory
 ) : PlayerComponent, ComponentContext by componentContext {
 
@@ -31,7 +34,7 @@ class DefaultPlayerComponent(
     }
 
     override fun changeLikeStatus() {
-        store.accept(PlayerStore.Intent.ChangeLikeStatus)
+        store.accept(PlayerStore.Intent.ChangeLikeStatus(currentSong))
     }
 
     override fun seekToNext(nextSong: SongEntity) {
@@ -42,4 +45,13 @@ class DefaultPlayerComponent(
         store.accept(PlayerStore.Intent.SeekToPrevious(previousSong))
     }
 
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("componentContext") componentContext: ComponentContext,
+            @Assisted("currentSong") currentSong: SongEntity,
+            @Assisted("nextSong") nextSong: SongEntity,
+            @Assisted("previousSong") previousSong: SongEntity,
+        ): DefaultPlayerComponent
+    }
 }

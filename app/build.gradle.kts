@@ -43,10 +43,6 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
-    ksp {
-        arg("room.schemaLocation", libs.versions.room)
-        arg("room.generateKotlin", "true")
-    }
 }
 
 dependencies {
@@ -60,21 +56,18 @@ dependencies {
     //decompose
     implementation(libs.decompose)
     implementation(libs.decompose.extensions.compose)
+    //room
+    implementation(libs.androidx.room.ktx)
     //exoplayer
     implementation(libs.media3.common.ktx)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
-    //room
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
     //coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    //koin
-    runtimeOnly(libs.koin.core)
-    implementation(libs.koin.android)
-    runtimeOnly(libs.koin.android.compose)
+    //dagger
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
     //default
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
