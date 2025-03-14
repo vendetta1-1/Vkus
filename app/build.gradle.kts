@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
-    alias(libs.plugins.parcelize)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -43,34 +43,33 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
-    ksp {
-        arg("room.schemaLocation", libs.versions.room)
-        arg("room.generateKotlin", "true")
-    }
 }
 
 dependencies {
     //modules
-    implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":domain"))
+    //serialization
+    implementation(libs.serialization)
+    //mvi
+    implementation(libs.mviKotlin)
+    implementation(libs.mviKotlin.main)
+    implementation(libs.mviKotlin.coroutines)
     //decompose
     implementation(libs.decompose)
     implementation(libs.decompose.extensions.compose)
+    //room
+    implementation(libs.androidx.room.ktx)
     //exoplayer
     implementation(libs.media3.common.ktx)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
-    //room
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
     //coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    //koin
-    implementation(libs.koin.android)
-    implementation(libs.koin.androidx.navigation)
-    implementation(libs.koin.androidx.compose)
+    //dagger
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
     //default
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

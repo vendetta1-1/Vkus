@@ -1,21 +1,19 @@
 package com.vendetta.vkus.presentation.song_list
 
+import android.net.Uri
 import com.vendetta.domain.entity.SongEntity
 import kotlinx.coroutines.flow.StateFlow
 
 interface SongListComponent {
 
-    val model: StateFlow<Model>
+    val model: StateFlow<SongListStore.State>
 
     fun changeLikeStatus(song: SongEntity)
 
     fun deleteSong(song: SongEntity)
 
-    fun addSong(path: String)
+    fun addSong(uri: Uri)
 
-    fun playSong(songUri: String)
+    fun playSong(song: SongEntity)
 
-    data class Model(
-        val songs: List<SongEntity>
-    )
 }

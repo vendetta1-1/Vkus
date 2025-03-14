@@ -1,26 +1,18 @@
 package com.vendetta.vkus.presentation.player
 
-import android.os.Parcelable
 import com.vendetta.domain.entity.SongEntity
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.parcelize.Parcelize
 
 interface PlayerComponent {
 
-    val model: StateFlow<Model>
+    val model: StateFlow<PlayerStore.State>
 
-    fun play(path: String)
+    fun playOrPause()
 
     fun changeLikeStatus()
 
-    fun pause()
+    fun seekToNext(nextSong: SongEntity)
 
-    fun seekToNext()
+    fun seekToPrevious(previousSong: SongEntity)
 
-    fun seekToPrevious()
-
-    @Parcelize
-    data class Model(
-        val song: SongEntity
-    ) : Parcelable
 }

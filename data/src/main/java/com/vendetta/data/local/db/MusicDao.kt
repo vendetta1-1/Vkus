@@ -10,7 +10,7 @@ import com.vendetta.data.local.model.SongDbModel
 interface MusicDao {
 
     @Query("SELECT * FROM songs")
-    fun getSongs(): List<SongDbModel>
+    suspend fun getSongs(): List<SongDbModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = SongDbModel::class)
     suspend fun addSong(songDbModel: SongDbModel)

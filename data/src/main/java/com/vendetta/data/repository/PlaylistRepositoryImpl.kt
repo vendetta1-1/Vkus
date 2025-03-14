@@ -1,4 +1,4 @@
-package com.vendetta.data.repository.playlist
+package com.vendetta.data.repository
 
 import android.media.MediaMetadataRetriever
 import androidx.annotation.OptIn
@@ -9,17 +9,29 @@ import com.vendetta.data.mapper.toDbModel
 import com.vendetta.data.mapper.toEntity
 import com.vendetta.domain.entity.SongEntity
 import com.vendetta.domain.repository.PlaylistRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @OptIn(UnstableApi::class)
-class PlaylistRepositoryImpl(
+class PlaylistRepositoryImpl @Inject constructor(
     private val retriever: MediaMetadataRetriever,
     private val musicDao: MusicDao
 ) : PlaylistRepository {
 
-    private val songsList = musicDao.getSongs().toMutableList()
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    private lateinit var songsList: MutableList<SongDbModel>
+
+    init {
+        scope.launch {
+            songsList = musicDao.getSongs().toMutableList()
+        }
+    }
 
     private val songListChangeEvents = MutableSharedFlow<Unit>(replay = 1).apply {
         tryEmit(Unit)
@@ -41,11 +53,11 @@ class PlaylistRepositoryImpl(
         songListChangeEvents.tryEmit(Unit)
     }
 
-    override suspend fun addSong(path: String) {
-        retriever.setDataSource(path)
+    override suspend fun addSong(uri: String) {
+        retriever.setDataSource(uri.toString())
         val song = SongDbModel(
             id = songsList.size,
-            uri = path,
+            uri = uri.toString(),
             isFavourite = false,
             durationInMillis = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 ?.toLong() ?: throw RuntimeException("duration == null"),
