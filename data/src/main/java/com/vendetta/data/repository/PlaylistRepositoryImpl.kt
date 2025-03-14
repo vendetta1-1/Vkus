@@ -1,7 +1,6 @@
 package com.vendetta.data.repository
 
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.vendetta.data.local.db.MusicDao
@@ -54,7 +53,7 @@ class PlaylistRepositoryImpl @Inject constructor(
         songListChangeEvents.tryEmit(Unit)
     }
 
-    override suspend fun addSong(uri: Uri) {
+    override suspend fun addSong(uri: String) {
         retriever.setDataSource(uri.toString())
         val song = SongDbModel(
             id = songsList.size,

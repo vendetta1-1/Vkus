@@ -105,7 +105,7 @@ class SongListFactory @Inject constructor(
 
                 is Intent.AddSong -> {
                     scope.launch {
-                        addSongUseCase(intent.uri)
+                        addSongUseCase(intent.uri.toString())
                     }
                 }
             }

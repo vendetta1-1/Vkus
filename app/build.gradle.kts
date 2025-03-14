@@ -47,8 +47,8 @@ android {
 
 dependencies {
     //modules
-    implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":domain"))
     //serialization
     implementation(libs.serialization)
     //mvi
