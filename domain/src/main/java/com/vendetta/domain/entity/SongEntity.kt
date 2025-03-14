@@ -1,20 +1,18 @@
 package com.vendetta.domain.entity
 
-import android.net.Uri
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class SongEntity(
     val id: Int,
-    val uri: Uri,
+    val uri: String,
     val isFavourite: Boolean,
     val durationInMillis: Long,
     val coverBitmap: ByteArray,
     val songName: String,
     val artistName: String,
     val albumName: String,
-) : Parcelable {
+) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

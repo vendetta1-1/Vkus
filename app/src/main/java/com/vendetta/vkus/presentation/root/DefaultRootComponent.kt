@@ -1,10 +1,10 @@
 package com.vendetta.vkus.presentation.root
 
-import android.os.Parcelable
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.DelicateDecomposeApi
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
+import com.arkivanov.decompose.router.stack.active
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.router.stack.popToFirst
 import com.arkivanov.decompose.router.stack.push
@@ -16,18 +16,19 @@ import com.vendetta.vkus.presentation.song_list.DefaultSongListComponent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.serializer
 
 class DefaultRootComponent @AssistedInject constructor(
     @Assisted("componentContext") componentContext: ComponentContext,
     private val playerComponentFactory: DefaultPlayerComponent.Factory,
     private val favouriteComponentFactory: DefaultFavouriteComponent.Factory,
-    private val songListComponentFactory: DefaultSongListComponent.Factory
-) : RootComponent, ComponentContext by componentContext {
+    private val songListComponentFactory: DefaultSongListComponent.Factory,
 
+    ) : RootComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Config>()
+
 
     override val stack: Value<ChildStack<*, RootComponent.Child>> = childStack(
         source = navigation,
@@ -37,29 +38,15 @@ class DefaultRootComponent @AssistedInject constructor(
         serializer = serializer<Config>(),
     )
 
-    @OptIn(DelicateDecomposeApi::class)
-    override fun onSongListClicked() {
+    override fun onHomeClicked() {
         navigation.popToFirst()
     }
 
     @OptIn(DelicateDecomposeApi::class)
     override fun onFavouriteClicked() {
-        navigation.push(Config.FavouriteSongs)
-    }
-
-    @OptIn(DelicateDecomposeApi::class)
-    override fun onPlayerClicked(
-        currentSong: SongEntity,
-        nextSong: SongEntity,
-        previousSong: SongEntity
-    ) {
-        navigation.push(
-            Config.Player(
-                currentSong = currentSong,
-                nextSong = nextSong,
-                previousSong = previousSong
-            )
-        )
+        if (stack.active.instance !is RootComponent.Child.Favourite) {
+            navigation.push(Config.FavouriteSongs)
+        }
     }
 
     private fun child(
@@ -90,16 +77,16 @@ class DefaultRootComponent @AssistedInject constructor(
 
     }
 
-    @Parcelize
-    sealed interface Config : Parcelable {
+    @Serializable
+    sealed interface Config {
 
-        @Parcelize
+        @Serializable
         data object SongList : Config
 
-        @Parcelize
+        @Serializable
         data object FavouriteSongs : Config
 
-        @Parcelize
+        @Serializable
         data class Player(
             val currentSong: SongEntity,
             val nextSong: SongEntity,

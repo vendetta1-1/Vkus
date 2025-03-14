@@ -10,6 +10,4 @@ interface FavouriteComponent {
     fun changeLikeStatus(song: SongEntity)
 
     fun playSong(song: SongEntity)
-
-
 }

@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.parcelize)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -34,6 +34,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.serialization)
     implementation(libs.javax.inject)
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit)

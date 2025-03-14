@@ -8,6 +8,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 coroutines = "1.10.1"
+kotlinxSerializationJson = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
 composeBom = "2025.03.00"
@@ -24,6 +25,7 @@ javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 mviKotlin = { module = "com.arkivanov.mvikotlin:mvikotlin", version.ref = "mviKotlin" }
 mviKotlin-main = { module = "com.arkivanov.mvikotlin:mvikotlin-main", version.ref = "mviKotlin" }
 mviKotlin-coroutines = { module = "com.arkivanov.mvikotlin:mvikotlin-extensions-coroutines", version.ref = "mviKotlin" }
@@ -55,7 +57,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3" }
 
 [plugins]
-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+serialization = {id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 room = { id = "androidx.room", version.ref = "room" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
