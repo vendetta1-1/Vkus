@@ -117,8 +117,13 @@ class SongListFactory @Inject constructor(
         override fun State.reduce(msg: Message): State {
             return when (msg) {
                 is Message.ChangeLikeStatus -> {
-                    //придумать как обновлять стейт при добавлении песни в избранное
-                    copy()
+                    val oldSong = msg.song
+                    val newSong = oldSong.copy(isFavourite = !oldSong.isFavourite)
+                    copy(
+                        songs = this.songs.toMutableList().apply {
+                            this[oldSong.id] = newSong
+                        }
+                    )
                 }
 
                 is Message.DeleteSong -> {

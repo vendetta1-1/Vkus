@@ -12,6 +12,9 @@ interface MusicDao {
     @Query("SELECT * FROM songs")
     suspend fun getSongs(): List<SongDbModel>
 
+    @Query("SELECT * FROM SONGS WHERE isFavourite=1")
+    suspend fun getFavouriteSongs() : List<SongDbModel>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = SongDbModel::class)
     suspend fun addSong(songDbModel: SongDbModel)
 

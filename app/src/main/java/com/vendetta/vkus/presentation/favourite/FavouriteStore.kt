@@ -103,7 +103,13 @@ class FavouriteFactory @Inject constructor(
         override fun State.reduce(msg: Message): State {
             return when (msg) {
                 is ChangeLikeStatus -> {
-                    copy()
+                    val oldSong = msg.song
+                    val newSong = oldSong.copy(isFavourite = !oldSong.isFavourite)
+                    copy(
+                        songs = this.songs.toMutableList().apply {
+                            this[oldSong.id] = newSong
+                        }
+                    )
                 }
 
                 is DeleteSong -> {

@@ -47,7 +47,7 @@ fun SongListContent(
     component: SongListComponent,
     paddingValues: PaddingValues,
 ) {
-    val model by component.model.collectAsState(initial = SongListStore.State())
+    val model by component.model.collectAsState()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(), onResult = { uri: Uri? ->
             uri?.let {
@@ -56,34 +56,45 @@ fun SongListContent(
         }
     )
 
-    // заменить Scaffold на Box
-    Scaffold(floatingActionButton = {
-        FloatingActionButton(
-            onClick = {
-                launcher.launch(MimeTypes.AUDIO_MPEG)
-            }) {
-            Icon(
-                Icons.Default.Add, contentDescription = null
+    Scaffold(
+        modifier = Modifier.padding(paddingValues),
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    launcher.launch(MimeTypes.AUDIO_MPEG)
+                }
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = null
+                )
+            }
+        },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "Моя музыка")
+                }
             )
         }
-    }, topBar = {
-        TopAppBar(
-            title = {
-                Text(text = "Моя музыка")
-            })
-    }) { values ->
+    ) { values ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(values)
         ) {
             items(
-                items = model.songs, key = { it.id }) { songEntity ->
-                SongListItem(songEntity = songEntity, onSongClickListener = {
-                    component::playSong
-                }, onButtonClickListener = {
-                    component::changeLikeStatus
-                })
+                items = model.songs,
+                key = { it.id }
+            ) { songEntity ->
+                SongListItem(
+                    songEntity = songEntity,
+                    onSongClickListener = {
+                        component::playSong
+                    }, onButtonClickListener = {
+                        component::changeLikeStatus
+                    }
+                )
             }
         }
     }
@@ -91,7 +102,9 @@ fun SongListContent(
 
 @Composable
 private fun SongListItem(
-    songEntity: SongEntity, onSongClickListener: () -> Unit, onButtonClickListener: () -> Unit
+    songEntity: SongEntity,
+    onSongClickListener: () -> Unit,
+    onButtonClickListener: () -> Unit
 ) {
     Card(
         onClick = onSongClickListener, modifier = Modifier
@@ -122,7 +135,7 @@ private fun SongListItem(
             ) {
                 Icon(
                     imageVector = if (songEntity.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    tint = if (songEntity.isFavourite) Color.Red else Color.DarkGray,
+                    tint = if (songEntity.isFavourite) Color.Green else Color.DarkGray,
                     contentDescription = null
                 )
             }
