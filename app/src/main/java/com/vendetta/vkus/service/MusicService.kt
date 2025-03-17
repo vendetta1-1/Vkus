@@ -1,42 +1,43 @@
 package com.vendetta.vkus.service
 
-import android.media.browse.MediaBrowser
-import android.media.session.MediaSession
-import android.os.Bundle
-import android.service.media.MediaBrowserService
+import android.content.Intent
+import androidx.annotation.OptIn
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaSession
+import androidx.media3.session.MediaSessionService
+import androidx.media3.session.SessionCommands
 
-class MusicService : MediaBrowserService() {
+class MusicService : MediaSessionService() {
+
+    private lateinit var exoPlayer: ExoPlayer
 
     private lateinit var mediaSession: MediaSession
 
     override fun onCreate() {
         super.onCreate()
-        mediaSession = MediaSession(this, SESSION_TAG).apply {
-            isActive = true
+        exoPlayer = ExoPlayer.Builder(this).build()
+        mediaSession = MediaSession.Builder(this, exoPlayer).build()
+    }
+
+    @OptIn(UnstableApi::class)
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
+        val sessionCommands = SessionCommands.Builder().build()
+        val commands = Player.Commands.Builder().addAllCommands().build()
+        mediaSession.setAvailableCommands(controllerInfo, sessionCommands, commands)
+        return mediaSession
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        val player = mediaSession.player
+        if (
+            !player.playWhenReady
+            || player.mediaItemCount == 0
+            || player.playbackState == Player.STATE_ENDED
+        ) {
+            stopSelf()
         }
     }
 
-    override fun onGetRoot(
-        clientPackageName: String,
-        clientUid: Int,
-        rootHints: Bundle?
-    ): BrowserRoot? {
-        return if (this.packageName == clientPackageName) {
-            BrowserRoot(ROOT_ID, null)
-        } else {
-            null
-        }
-    }
-
-    override fun onLoadChildren(
-        parentId: String,
-        result: Result<List<MediaBrowser.MediaItem?>?>
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    private companion object {
-        const val ROOT_ID = "service_root_id"
-        const val SESSION_TAG = "media_session_tag"
-    }
 }

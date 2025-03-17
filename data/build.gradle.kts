@@ -49,10 +49,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
-    //exoplayer
-    implementation(libs.media3.common.ktx)
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.exoplayer.hls)
     //default
     implementation(libs.javax.inject)
     implementation(libs.androidx.core.ktx)
