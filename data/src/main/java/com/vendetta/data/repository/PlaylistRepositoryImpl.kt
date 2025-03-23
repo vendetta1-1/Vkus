@@ -10,10 +10,10 @@ import com.vendetta.domain.entity.SongEntity
 import com.vendetta.domain.repository.PlaylistRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 class PlaylistRepositoryImpl @Inject constructor(
@@ -24,40 +24,31 @@ class PlaylistRepositoryImpl @Inject constructor(
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private lateinit var songsList: MutableList<SongEntity>
-    private lateinit var favouriteSongList: MutableList<SongEntity>
+    override val songs: StateFlow<List<SongEntity>> = musicDao.getSongs()
+        .map { it.toEntity() }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Lazily,
+            initialValue = listOf()
+        )
 
-    init {
-        scope.launch {
-            songsList = musicDao.getSongs().toEntity().toMutableList()
-            favouriteSongList = musicDao.getFavouriteSongs().toEntity().toMutableList()
-        }
-    }
 
-    private val songListChangeEvents = MutableSharedFlow<Unit>(replay = 1).apply {
-        tryEmit(Unit)
-    }
-
-    override val songs: Flow<List<SongEntity>> = flow {
-        songListChangeEvents.collect {
-            emit(songsList)
-        }
-    }
-    override val favouriteSongs: Flow<List<SongEntity>> = flow {
-        songListChangeEvents.collect {
-            emit(favouriteSongList)
-        }
-    }
+    override val favouriteSongs: StateFlow<List<SongEntity>> = musicDao.getFavouriteSongs()
+        .map { it.toEntity() }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Lazily,
+            initialValue = listOf()
+        )
 
     override suspend fun changeLikeStatus(song: SongEntity) {
         musicDao.addSong(song.copy(isFavourite = !song.isFavourite).toDbModel())
-        songListChangeEvents.tryEmit(Unit)
     }
 
     override suspend fun addSong(uri: String) {
         retriever.setDataSource(application, uri.toUri())
         val song = SongEntity(
-            id = songsList.size,
+            id = songs.value.size,
             uri = uri,
             isFavourite = false,
             durationInMillis = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
@@ -71,13 +62,9 @@ class PlaylistRepositoryImpl @Inject constructor(
                 ?: "Untitled"
         )
         musicDao.addSong(song.toDbModel())
-        songsList.add(song.id, song)
-        songListChangeEvents.tryEmit(Unit)
     }
 
     override suspend fun deleteSong(song: SongEntity) {
         musicDao.deleteSong(song.id)
-        songsList.remove(song)
-        songListChangeEvents.tryEmit(Unit)
     }
 }

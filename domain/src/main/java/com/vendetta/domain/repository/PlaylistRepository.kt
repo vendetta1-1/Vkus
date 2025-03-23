@@ -1,13 +1,13 @@
 package com.vendetta.domain.repository
 
 import com.vendetta.domain.entity.SongEntity
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface PlaylistRepository {
 
-    val songs: Flow<List<SongEntity>>
+    val songs: StateFlow<List<SongEntity>>
 
-    val favouriteSongs: Flow<List<SongEntity>>
+    val favouriteSongs: StateFlow<List<SongEntity>>
 
     suspend fun changeLikeStatus(song: SongEntity)
 
