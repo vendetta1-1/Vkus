@@ -6,12 +6,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import androidx.media3.session.MediaSessionService
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
-class MusicService : MediaSessionService() {
+class MusicService : MediaLibraryService() {
 
     private val player: ExoPlayer by lazy {
         ExoPlayer
@@ -22,27 +22,27 @@ class MusicService : MediaSessionService() {
             }
     }
 
-    private lateinit var mediaSession: MediaSession
+    private lateinit var mediaLibrarySession: MediaLibrarySession
 
     override fun onCreate() {
         super.onCreate()
-        mediaSession = MediaSession.Builder(this, player)
-            .setCallback(SessionCallback())
+        mediaLibrarySession = MediaLibrarySession.Builder(this, player, SessionCallback())
             .build()
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
-        return if (isAllowedController(controllerInfo)) mediaSession else null
-    }
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaSession.release()
+        mediaLibrarySession.release()
         player.release()
     }
 
-    private fun isAllowedController(controllerInfo: MediaSession.ControllerInfo): Boolean =
-        controllerInfo.packageName == packageName
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? {
+        return if (controllerInfo.isAllowedController()) mediaLibrarySession else null
+    }
+
+    private fun MediaSession.ControllerInfo.isAllowedController(): Boolean =
+        this.packageName == packageName
 
     private inner class Listener : Player.Listener {
 
@@ -80,7 +80,7 @@ class MusicService : MediaSessionService() {
         }
     }
 
-    private inner class SessionCallback : MediaSession.Callback {
+    private inner class SessionCallback : MediaLibrarySession.Callback {
         @OptIn(UnstableApi::class)
         override fun onSetMediaItems(
             mediaSession: MediaSession,
