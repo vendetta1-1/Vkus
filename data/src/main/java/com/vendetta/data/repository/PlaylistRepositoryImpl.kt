@@ -1,82 +1,70 @@
 package com.vendetta.data.repository
 
+import android.app.Application
 import android.media.MediaMetadataRetriever
-import androidx.annotation.OptIn
-import androidx.media3.common.util.UnstableApi
+import androidx.core.net.toUri
 import com.vendetta.data.local.db.MusicDao
-import com.vendetta.data.local.model.SongDbModel
 import com.vendetta.data.mapper.toDbModel
 import com.vendetta.data.mapper.toEntity
 import com.vendetta.domain.entity.SongEntity
 import com.vendetta.domain.repository.PlaylistRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-@OptIn(UnstableApi::class)
 class PlaylistRepositoryImpl @Inject constructor(
     private val retriever: MediaMetadataRetriever,
-    private val musicDao: MusicDao
+    private val musicDao: MusicDao,
+    private val application: Application
 ) : PlaylistRepository {
 
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private lateinit var songsList: MutableList<SongDbModel>
+    override val songs: StateFlow<List<SongEntity>> = musicDao.getSongs()
+        .map { it.toEntity() }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Lazily,
+            initialValue = listOf()
+        )
 
-    init {
-        scope.launch {
-            songsList = musicDao.getSongs().toMutableList()
-        }
-    }
 
-    private val songListChangeEvents = MutableSharedFlow<Unit>(replay = 1).apply {
-        tryEmit(Unit)
-    }
-
-    override val songs: Flow<List<SongEntity>> = flow {
-        songListChangeEvents.collect {
-            emit(songsList.toEntity())
-        }
-    }
-    override val favouriteSongs: Flow<List<SongEntity>> = flow {
-        songListChangeEvents.collect {
-            emit(songsList.filter { it.isFavourite }.toEntity())
-        }
-    }
+    override val favouriteSongs: StateFlow<List<SongEntity>> = musicDao.getFavouriteSongs()
+        .map { it.toEntity() }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Lazily,
+            initialValue = listOf()
+        )
 
     override suspend fun changeLikeStatus(song: SongEntity) {
         musicDao.addSong(song.copy(isFavourite = !song.isFavourite).toDbModel())
-        songListChangeEvents.tryEmit(Unit)
     }
 
     override suspend fun addSong(uri: String) {
-        retriever.setDataSource(uri.toString())
-        val song = SongDbModel(
-            id = songsList.size,
-            uri = uri.toString(),
+        retriever.setDataSource(application, uri.toUri())
+        val song = SongEntity(
+            id = songs.value.size,
+            uri = uri,
             isFavourite = false,
             durationInMillis = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 ?.toLong() ?: throw RuntimeException("duration == null"),
             coverBitmap = retriever.embeddedPicture ?: throw RuntimeException("cover == null"),
             songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                ?: throw RuntimeException("songName == null"),
+                ?: "Untitled",
             artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-                ?: throw RuntimeException("artistName == null"),
+                ?: "Unknown",
             albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-                ?: throw RuntimeException("albumName == null")
+                ?: "Untitled"
         )
-        musicDao.addSong(song)
-        songsList[song.id] = song
-        songListChangeEvents.tryEmit(Unit)
+        musicDao.addSong(song.toDbModel())
     }
 
     override suspend fun deleteSong(song: SongEntity) {
         musicDao.deleteSong(song.id)
-        songsList.remove(song.toDbModel())
-        songListChangeEvents.tryEmit(Unit)
     }
 }

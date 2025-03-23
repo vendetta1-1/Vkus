@@ -1,12 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.room)
 }
 
 android {
-    namespace = "com.vendetta.data"
+    namespace = "com.vendetta.media"
     compileSdk = 35
 
     defaultConfig {
@@ -32,25 +30,15 @@ android {
     kotlinOptions {
         jvmTarget = "21"
     }
-    room {
-        schemaDirectory("$projectDir/schemas")
-    }
-    ksp {
-        arg("room.schemaLocation", libs.versions.room)
-        arg("room.generateKotlin", "true")
-    }
 }
 
 dependencies {
-    implementation(project(":domain"))
-    //gson
-    implementation(libs.gson)
-    //room
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.ktx)
-    //default
-    implementation(libs.javax.inject)
+    implementation(libs.media3.exoplayer.hls)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.datasource)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.session)
+    implementation(libs.media3.cast)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
