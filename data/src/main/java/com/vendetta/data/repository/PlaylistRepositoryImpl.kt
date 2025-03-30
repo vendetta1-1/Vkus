@@ -25,16 +25,15 @@ class PlaylistRepositoryImpl @Inject constructor(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     override val songs: StateFlow<List<SongEntity>> = musicDao.getSongs()
-        .map { it.toEntity() }
+        .map { list -> list.toEntity().sortedBy { it.id }}
         .stateIn(
             scope = scope,
             started = SharingStarted.Lazily,
             initialValue = listOf()
         )
 
-
     override val favouriteSongs: StateFlow<List<SongEntity>> = musicDao.getFavouriteSongs()
-        .map { it.toEntity() }
+        .map { list -> list.toEntity().sortedBy { it.id } }
         .stateIn(
             scope = scope,
             started = SharingStarted.Lazily,

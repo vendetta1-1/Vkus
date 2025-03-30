@@ -1,6 +1,5 @@
 package com.vendetta.vkus.presentation.song_list
 
-import android.net.Uri
 import com.vendetta.domain.entity.SongEntity
 import kotlinx.coroutines.flow.StateFlow
 
@@ -12,7 +11,7 @@ interface SongListComponent {
 
     fun deleteSong(song: SongEntity)
 
-    fun addSong(uri: Uri)
+    fun addSong(uri: String)
 
     fun playSong(song: SongEntity)
 

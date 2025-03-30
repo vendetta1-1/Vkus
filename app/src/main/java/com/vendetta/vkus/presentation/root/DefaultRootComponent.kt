@@ -23,9 +23,8 @@ class DefaultRootComponent @AssistedInject constructor(
     @Assisted("componentContext") componentContext: ComponentContext,
     private val playerComponentFactory: DefaultPlayerComponent.Factory,
     private val favouriteComponentFactory: DefaultFavouriteComponent.Factory,
-    private val songListComponentFactory: DefaultSongListComponent.Factory,
-
-    ) : RootComponent, ComponentContext by componentContext {
+    private val songListComponentFactory: DefaultSongListComponent.Factory
+) : RootComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Config>()
 

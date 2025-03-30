@@ -54,11 +54,8 @@ fun FavouriteContent(
             ) { songEntity ->
                 SongListItem(
                     songEntity = songEntity,
-                    onSongClickListener = {
-                        component::playSong
-                    }, onButtonClickListener = {
-                        component::changeLikeStatus
-                    }
+                    onSongClickListener = component::playSong,
+                    onButtonClickListener = component::changeLikeStatus
                 )
             }
         }
@@ -68,11 +65,13 @@ fun FavouriteContent(
 @Composable
 private fun SongListItem(
     songEntity: SongEntity,
-    onSongClickListener: () -> Unit,
-    onButtonClickListener: () -> Unit
+    onSongClickListener: (SongEntity) -> Unit,
+    onButtonClickListener: (SongEntity) -> Unit
 ) {
     Card(
-        onClick = onSongClickListener, modifier = Modifier
+        onClick = {
+            onSongClickListener(songEntity)
+        }, modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
     ) {
@@ -96,7 +95,9 @@ private fun SongListItem(
             }
 
             IconButton(
-                onClick = onButtonClickListener
+                onClick = {
+                    onButtonClickListener(songEntity)
+                }
             ) {
                 Icon(
                     imageVector = if (songEntity.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,

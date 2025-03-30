@@ -8,9 +8,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vendetta.domain.entity.SongEntity
 import com.vendetta.domain.usecase.ChangeLikeStatusUseCase
 import com.vendetta.domain.usecase.GetFavouriteSongsUseCase
-import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.AddSong
 import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.ChangeLikeStatus
-import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.DeleteSong
 import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.PlaySong
 import com.vendetta.vkus.presentation.favourite.FavouriteFactory.Message.SongsLoaded
 import com.vendetta.vkus.presentation.favourite.FavouriteStore.Intent
@@ -55,9 +53,7 @@ class FavouriteFactory @Inject constructor(
     private sealed interface Message {
         data class SongsLoaded(val songs: List<SongEntity>) : Message
         data class PlaySong(val song: SongEntity) : Message
-        data class DeleteSong(val song: SongEntity) : Message
         data class ChangeLikeStatus(val song: SongEntity) : Message
-        data class AddSong(val song: SongEntity) : Message
     }
 
     private inner class BootstrapperImpl : CoroutineBootstrapper<Action>() {
@@ -79,7 +75,7 @@ class FavouriteFactory @Inject constructor(
                 is Action.SongsLoaded -> {
                     dispatch(SongsLoaded(action.songs))
                 }
-            }
+            } 
         }
 
         override fun executeIntent(intent: Intent) {
@@ -104,39 +100,21 @@ class FavouriteFactory @Inject constructor(
             return when (msg) {
                 is ChangeLikeStatus -> {
                     val oldSong = msg.song
+                    val index = songs.indexOf(oldSong)
                     val newSong = oldSong.copy(isFavourite = !oldSong.isFavourite)
                     copy(
                         songs = this.songs.toMutableList().apply {
-                            this[oldSong.id] = newSong
+                            this[index] = newSong
                         }
                     )
                 }
-
-                is DeleteSong -> {
-                    copy(
-                        songs = this.songs.toMutableList().apply {
-                            remove(msg.song)
-                        }
-                    )
-                }
-
                 is PlaySong -> {
                     copy(nowPlayingSong = msg.song)
                 }
-
                 is SongsLoaded -> {
                     copy(songs = msg.songs)
                 }
-
-                is AddSong -> {
-                    copy(
-                        songs = this.songs.toMutableList().apply {
-                            add(msg.song)
-                        }
-                    )
-                }
             }
-
         }
     }
 

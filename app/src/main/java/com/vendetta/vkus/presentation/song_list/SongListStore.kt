@@ -1,6 +1,5 @@
 package com.vendetta.vkus.presentation.song_list
 
-import android.net.Uri
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
@@ -27,7 +26,7 @@ interface SongListStore : Store<Intent, State, Nothing> {
         data class PlaySong(val song: SongEntity) : Intent
         data class DeleteSong(val song: SongEntity) : Intent
         data class ChangeLikeStatus(val song: SongEntity) : Intent
-        data class AddSong(val uri: Uri) : Intent
+        data class AddSong(val uri: String) : Intent
     }
 
 }
@@ -43,7 +42,7 @@ class SongListFactory @Inject constructor(
     fun create(): SongListStore = object : SongListStore,
         Store<Intent, State, Nothing> by storeFactory.create(
             name = STORE_NAME,
-            initialState = State(listOf()),
+            initialState = State(),
             reducer = ReducerImpl,
             executorFactory = ::Executor,
             bootstrapper = BootstrapperImpl()
@@ -105,7 +104,7 @@ class SongListFactory @Inject constructor(
 
                 is Intent.AddSong -> {
                     scope.launch {
-                        addSongUseCase(intent.uri.toString())
+                        addSongUseCase(intent.uri)
                     }
                 }
             }
@@ -118,39 +117,39 @@ class SongListFactory @Inject constructor(
             return when (msg) {
                 is Message.ChangeLikeStatus -> {
                     val oldSong = msg.song
-                    val newSong = oldSong.copy(isFavourite = !oldSong.isFavourite)
+                    val index = songs.indexOf(oldSong)
+                    val newList = songs.toMutableList().apply {
+                        this[index] = oldSong.copy(isFavourite = !oldSong.isFavourite)
+                    }
                     copy(
-                        songs = this.songs.toMutableList().apply {
-                            this[oldSong.id] = newSong
-                        }
+                        songs = newList
                     )
                 }
 
                 is Message.DeleteSong -> {
+                    val newList = songs.toMutableList().apply {
+                        remove(msg.song)
+                    }
                     copy(
-                        songs = this.songs.toMutableList().apply {
-                            remove(msg.song)
-                        }
+                        songs = newList
                     )
                 }
 
-                is Message.PlaySong -> {
-                    copy(nowPlayingSong = msg.song)
-                }
+                is Message.PlaySong -> copy(nowPlayingSong = msg.song)
 
                 is Message.SongsLoaded -> {
                     copy(songs = msg.songs)
                 }
 
                 is Message.AddSong -> {
+                    val newList = songs.toMutableList().apply {
+                        add(msg.song)
+                    }
                     copy(
-                        songs = this.songs.toMutableList().apply {
-                            add(msg.song)
-                        }
+                        songs = newList
                     )
                 }
             }
-
         }
     }
 

@@ -12,9 +12,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val appComponent = getApplicationComponent(application)
+        val rootComponentFactory = appComponent.getRootComponentFactory()
         setContent {
-            val appComponent = getApplicationComponent(application)
-            val rootComponentFactory = appComponent.getRootComponentFactory()
             VkusTheme {
                 RootContent(component = rootComponentFactory.create(defaultComponentContext()))
             }

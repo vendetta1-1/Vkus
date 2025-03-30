@@ -22,13 +22,18 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,9 +54,10 @@ fun SongListContent(
 ) {
     val model by component.model.collectAsState()
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(), onResult = { uri: Uri? ->
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
             uri?.let {
-                component.addSong(it)
+                component.addSong(it.toString())
             }
         }
     )
@@ -86,15 +92,33 @@ fun SongListContent(
             items(
                 items = model.songs,
                 key = { it.id }
-            ) { songEntity ->
-                SongListItem(
-                    songEntity = songEntity,
-                    onSongClickListener = {
-                        component::playSong
-                    }, onButtonClickListener = {
-                        component::changeLikeStatus
+            ) { song ->
+
+                val dismissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = { value ->
+                        val isDismissed = value in setOf(
+                            SwipeToDismissBoxValue.EndToStart
+                        )
+
+                        if (isDismissed) {
+                            component.deleteSong(song)
+                        }
+
+                        isDismissed
                     }
                 )
+
+                SwipeToDismissBox(
+                    state = dismissState,
+                    backgroundContent = {}
+                ) {
+                    SongListItem(
+                        songEntity = song,
+                        onSongClickListener = component::playSong,
+                        onButtonClickListener = component::changeLikeStatus
+                    )
+                }
+
             }
         }
     }
@@ -103,13 +127,17 @@ fun SongListContent(
 @Composable
 private fun SongListItem(
     songEntity: SongEntity,
-    onSongClickListener: () -> Unit,
-    onButtonClickListener: () -> Unit
+    onSongClickListener: (SongEntity) -> Unit,
+    onButtonClickListener: (SongEntity) -> Unit
 ) {
     Card(
-        onClick = onSongClickListener, modifier = Modifier
+        onClick = {
+            onSongClickListener(songEntity)
+        },
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp)
+            .padding(4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -131,7 +159,9 @@ private fun SongListItem(
             }
 
             IconButton(
-                onClick = onButtonClickListener
+                onClick = {
+                    onButtonClickListener(songEntity)
+                }
             ) {
                 Icon(
                     imageVector = if (songEntity.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,

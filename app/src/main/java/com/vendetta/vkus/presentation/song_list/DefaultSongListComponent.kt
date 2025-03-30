@@ -1,6 +1,5 @@
 package com.vendetta.vkus.presentation.song_list
 
-import android.net.Uri
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
@@ -29,7 +28,7 @@ class DefaultSongListComponent @AssistedInject constructor(
         store.accept(SongListStore.Intent.DeleteSong(song))
     }
 
-    override fun addSong(uri: Uri) {
+    override fun addSong(uri: String) {
         store.accept(SongListStore.Intent.AddSong(uri))
     }
 
