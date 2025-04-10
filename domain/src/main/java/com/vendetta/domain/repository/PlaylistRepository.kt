@@ -11,7 +11,7 @@ interface PlaylistRepository {
 
     suspend fun changeLikeStatus(song: SongEntity)
 
-    suspend fun addSong(uri: String)
+    suspend fun addSong(uri: String): SongEntity
 
     suspend fun deleteSong(song: SongEntity)
 }

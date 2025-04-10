@@ -25,7 +25,7 @@ class PlaylistRepositoryImpl @Inject constructor(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     override val songs: StateFlow<List<SongEntity>> = musicDao.getSongs()
-        .map { list -> list.toEntity().sortedBy { it.id }}
+        .map { list -> list.toEntity().sortedBy { it.id } }
         .stateIn(
             scope = scope,
             started = SharingStarted.Lazily,
@@ -44,7 +44,7 @@ class PlaylistRepositoryImpl @Inject constructor(
         musicDao.addSong(song.copy(isFavourite = !song.isFavourite).toDbModel())
     }
 
-    override suspend fun addSong(uri: String) {
+    override suspend fun addSong(uri: String): SongEntity {
         retriever.setDataSource(application, uri.toUri())
         val song = SongEntity(
             id = songs.value.size,
@@ -61,6 +61,7 @@ class PlaylistRepositoryImpl @Inject constructor(
                 ?: "Untitled"
         )
         musicDao.addSong(song.toDbModel())
+        return song
     }
 
     override suspend fun deleteSong(song: SongEntity) {

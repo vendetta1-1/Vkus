@@ -66,8 +66,8 @@ dependencies {
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
     //coroutines
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
     //dagger
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)

@@ -75,7 +75,7 @@ class FavouriteFactory @Inject constructor(
                 is Action.SongsLoaded -> {
                     dispatch(SongsLoaded(action.songs))
                 }
-            } 
+            }
         }
 
         override fun executeIntent(intent: Intent) {
@@ -102,15 +102,16 @@ class FavouriteFactory @Inject constructor(
                     val oldSong = msg.song
                     val index = songs.indexOf(oldSong)
                     val newSong = oldSong.copy(isFavourite = !oldSong.isFavourite)
-                    copy(
-                        songs = this.songs.toMutableList().apply {
-                            this[index] = newSong
-                        }
-                    )
+                    val newList = songs.toMutableList().apply {
+                        this[index] = newSong
+                    }
+                    copy(songs = newList)
                 }
+
                 is PlaySong -> {
                     copy(nowPlayingSong = msg.song)
                 }
+
                 is SongsLoaded -> {
                     copy(songs = msg.songs)
                 }

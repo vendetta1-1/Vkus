@@ -18,8 +18,7 @@ import javax.inject.Inject
 interface SongListStore : Store<Intent, State, Nothing> {
 
     data class State(
-        val songs: List<SongEntity> = listOf(),
-        val nowPlayingSong: SongEntity? = null
+        val songs: List<SongEntity> = listOf(), val nowPlayingSong: SongEntity? = null
     )
 
     sealed interface Intent {
@@ -39,8 +38,8 @@ class SongListFactory @Inject constructor(
     private val changeLikeStatusUseCase: ChangeLikeStatusUseCase
 ) {
 
-    fun create(): SongListStore = object : SongListStore,
-        Store<Intent, State, Nothing> by storeFactory.create(
+    fun create(): SongListStore =
+        object : SongListStore, Store<Intent, State, Nothing> by storeFactory.create(
             name = STORE_NAME,
             initialState = State(),
             reducer = ReducerImpl,
@@ -71,8 +70,7 @@ class SongListFactory @Inject constructor(
         }
     }
 
-    private inner class Executor :
-        CoroutineExecutor<Intent, Action, State, Message, Nothing>() {
+    private inner class Executor : CoroutineExecutor<Intent, Action, State, Message, Nothing>() {
 
         override fun executeAction(action: Action) {
             when (action) {
@@ -104,7 +102,7 @@ class SongListFactory @Inject constructor(
 
                 is Intent.AddSong -> {
                     scope.launch {
-                        addSongUseCase(intent.uri)
+                        dispatch(Message.AddSong(addSongUseCase(intent.uri)))
                     }
                 }
             }
@@ -142,11 +140,10 @@ class SongListFactory @Inject constructor(
                 }
 
                 is Message.AddSong -> {
-                    val newList = songs.toMutableList().apply {
-                        add(msg.song)
-                    }
                     copy(
-                        songs = newList
+                        songs = songs.toMutableList().apply {
+                            add(msg.song)
+                        }
                     )
                 }
             }

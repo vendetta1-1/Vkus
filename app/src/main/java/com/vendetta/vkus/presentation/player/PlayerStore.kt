@@ -27,7 +27,6 @@ interface PlayerStore : Store<Intent, State, Nothing> {
         data object ResumeOrPause : Intent
         data class SeekToNext(val nextSong: SongEntity) : Intent
         data class SeekToPrevious(val previousSong: SongEntity) : Intent
-
     }
 }
 

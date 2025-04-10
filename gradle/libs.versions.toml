@@ -2,20 +2,23 @@
 agp = "8.9.1"
 dagger = "2.55"
 gson = "2.12.1"
-junitJupiter = "5.12.0"
-kotlin = "2.1.10"
-coreKtx = "1.15.0"
+junit = "5.12.1"
+junitPlatformSuite = "1.12.1"
+kotlin = "2.1.20"
+coreKtx = "1.16.0"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 coroutines = "1.10.1"
 kotlinxSerializationJson = "1.8.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.03.01"
+composeBom = "2025.04.00"
 media3 = "1.6.0"
-ksp = "2.1.10-1.0.30"
-mockk = "1.13.16"
-room = "2.6.1"
+ksp = "2.1.20-1.0.32"
+mockitoCore = "5.17.0"
+mockitoJunitJupiter = "5.16.1"
+mockitoKotlin = "5.4.0"
+room = "2.7.0"
 decompose = "3.2.2"
 appcompat = "1.7.0"
 material = "1.12.0"
@@ -26,10 +29,14 @@ javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
-junit = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitJupiter" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+junit = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-suite = { module = "org.junit.platform:junit-platform-suite", version.ref = "junitPlatformSuite" }
 media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+mockito-junit = { module = "org.mockito:mockito-junit-jupiter", version.ref = "mockitoJunitJupiter" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 mviKotlin = { module = "com.arkivanov.mvikotlin:mvikotlin", version.ref = "mviKotlin" }
 mviKotlin-main = { module = "com.arkivanov.mvikotlin:mvikotlin-main", version.ref = "mviKotlin" }
@@ -41,8 +48,8 @@ media3-exoplayer-hls = { module = "androidx.media3:media3-exoplayer-hls", versio
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
