@@ -1,96 +1,72 @@
 package com.vendetta.vkus.presentation.root
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.decompose.DelicateDecomposeApi
-import com.arkivanov.decompose.router.stack.ChildStack
-import com.arkivanov.decompose.router.stack.StackNavigation
-import com.arkivanov.decompose.router.stack.active
-import com.arkivanov.decompose.router.stack.childStack
-import com.arkivanov.decompose.router.stack.popToFirst
-import com.arkivanov.decompose.router.stack.push
+import com.arkivanov.decompose.router.pages.ChildPages
+import com.arkivanov.decompose.router.pages.Pages
+import com.arkivanov.decompose.router.pages.PagesNavigation
+import com.arkivanov.decompose.router.pages.childPages
+import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.value.Value
-import com.vendetta.domain.entity.SongEntity
 import com.vendetta.vkus.presentation.favourite.DefaultFavouriteComponent
-import com.vendetta.vkus.presentation.player.DefaultPlayerComponent
 import com.vendetta.vkus.presentation.song_list.DefaultSongListComponent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.serializer
 
 class DefaultRootComponent @AssistedInject constructor(
     @Assisted("componentContext") componentContext: ComponentContext,
-    private val playerComponentFactory: DefaultPlayerComponent.Factory,
     private val favouriteComponentFactory: DefaultFavouriteComponent.Factory,
     private val songListComponentFactory: DefaultSongListComponent.Factory
 ) : RootComponent, ComponentContext by componentContext {
 
-    private val navigation = StackNavigation<Config>()
+    private val navigation = PagesNavigation<PageConfig>()
 
-
-    override val stack: Value<ChildStack<*, RootComponent.Child>> = childStack(
+    override val pages: Value<ChildPages<*, RootComponent.Page>> = childPages(
         source = navigation,
-        initialConfiguration = Config.SongList,
+        serializer = PageConfig.serializer(),
         handleBackButton = true,
-        childFactory = ::child,
-        serializer = serializer<Config>(),
+        initialPages = {
+            Pages(
+                items = listOf<PageConfig>(PageConfig.SongList, PageConfig.Favourite),
+                selectedIndex = 0
+            )
+        },
+        childFactory = { config, componentContext ->
+            when (config) {
+                PageConfig.Favourite -> {
+                    val component = favouriteComponentFactory.create(componentContext)
+                    RootComponent.Page.Favourite(component)
+                }
+
+                PageConfig.SongList -> {
+                    val component = songListComponentFactory.create(componentContext)
+                    RootComponent.Page.SongList(component)
+                }
+            }
+        }
     )
 
-    override fun onHomeClicked() {
-        navigation.popToFirst()
+    override fun selectPage(index: Int) {
+        navigation.select(index = index)
     }
 
-    @OptIn(DelicateDecomposeApi::class)
-    override fun onFavouriteClicked() {
-        if (stack.active.instance !is RootComponent.Child.Favourite) {
-            navigation.push(Config.FavouriteSongs)
-        }
+    override fun selectSongList() {
+        selectPage(0)
     }
 
-    private fun child(
-        config: Config,
-        componentContext: ComponentContext
-    ): RootComponent.Child {
-        return when (config) {
-            Config.FavouriteSongs -> {
-                val component = favouriteComponentFactory.create(componentContext)
-                RootComponent.Child.Favourite(component)
-            }
-
-            is Config.Player -> {
-                val component = playerComponentFactory.create(
-                    componentContext = componentContext,
-                    currentSong = config.currentSong,
-                    nextSong = config.nextSong,
-                    previousSong = config.previousSong
-                )
-                RootComponent.Child.Player(component)
-            }
-
-            Config.SongList -> {
-                val component = songListComponentFactory.crete(componentContext)
-                RootComponent.Child.SongList(component)
-            }
-        }
-
+    override fun selectFavourite() {
+        selectPage(1)
     }
 
     @Serializable
-    sealed interface Config {
+    private sealed interface PageConfig {
 
         @Serializable
-        data object SongList : Config
+        data object SongList : PageConfig
 
         @Serializable
-        data object FavouriteSongs : Config
-
-        @Serializable
-        data class Player(
-            val currentSong: SongEntity,
-            val nextSong: SongEntity,
-            val previousSong: SongEntity
-        ) : Config
+        data object Favourite : PageConfig
     }
 
     @AssistedFactory

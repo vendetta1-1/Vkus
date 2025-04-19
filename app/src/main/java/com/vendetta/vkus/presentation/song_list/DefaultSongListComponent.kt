@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 class DefaultSongListComponent @AssistedInject constructor(
     private val songListStoreFactory: SongListFactory,
-    @Assisted("componentContext") componentContext: ComponentContext,
+    @Assisted("componentContext") componentContext: ComponentContext
 ) : SongListComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore { songListStoreFactory.create() }
@@ -38,7 +38,7 @@ class DefaultSongListComponent @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun crete(
+        fun create(
             @Assisted("componentContext") componentContext: ComponentContext
         ): DefaultSongListComponent
     }

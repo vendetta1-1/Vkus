@@ -15,4 +15,5 @@ interface PlayerComponent {
 
     fun seekToPrevious(previousSong: SongEntity)
 
+    fun onDismiss()
 }

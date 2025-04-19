@@ -1,5 +1,8 @@
 package com.vendetta.vkus.presentation.root
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
@@ -8,46 +11,48 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.arkivanov.decompose.extensions.compose.stack.Children
-import com.arkivanov.decompose.router.stack.active
+import com.arkivanov.decompose.extensions.compose.pages.ChildPages
+import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
+import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vendetta.vkus.R
 import com.vendetta.vkus.presentation.favourite.FavouriteContent
-import com.vendetta.vkus.presentation.player.PlayerContent
 import com.vendetta.vkus.presentation.song_list.SongListContent
 
 @Composable
 fun RootContent(
     component: RootComponent
 ) {
-    val stack = component.stack
-
-    Children(stack) { child ->
-        Scaffold(
-            bottomBar = {
-                NavigationBarComponent(
-                    onHomeClicked = component::onHomeClicked,
-                    onFavouriteClicked = component::onFavouriteClicked,
-                    selectedChild = stack.active.instance
-                )
-            }
-        ) { values ->
-            when (val instance = child.instance) {
-                is RootComponent.Child.Favourite -> {
-                    FavouriteContent(instance.component, values)
-                }
-
-                is RootComponent.Child.Player -> {
-                    PlayerContent(instance.component, values)
-                }
-
-                is RootComponent.Child.SongList -> {
-                    SongListContent(instance.component, values)
-                }
-            }
+    val pages = component.pages.subscribeAsState()
+    Scaffold(
+        bottomBar = {
+            NavigationBarComponent(
+                onHomeClicked = component::selectSongList,
+                onFavouriteClicked = component::selectFavourite,
+                selectedIndex = pages.value.selectedIndex
+            )
         }
+    ) { values ->
+        ChildPages(
+            pages = pages.value,
+            onPageSelected = component::selectPage,
+            scrollAnimation = PagesScrollAnimation.Custom(
+                spring(
+                    stiffness = Spring.StiffnessMediumLow,
+                    dampingRatio = Spring.DampingRatioLowBouncy
+                )
+            ),
+            modifier = Modifier.padding(values),
+            pageContent = { _, page ->
+                when (page) {
+                    is RootComponent.Page.Favourite -> FavouriteContent(page.component)
+                    is RootComponent.Page.SongList -> SongListContent(page.component)
+                }
+            }
+        )
     }
 }
 
@@ -55,13 +60,13 @@ fun RootContent(
 private fun NavigationBarComponent(
     onHomeClicked: () -> Unit,
     onFavouriteClicked: () -> Unit,
-    selectedChild: RootComponent.Child
+    selectedIndex: Int
 ) {
     NavigationBar {
         NavigationBarItem(
-            selected = selectedChild is RootComponent.Child.SongList,
+            selected = selectedIndex == 0,
             onClick = {
-                if (selectedChild !is RootComponent.Child.SongList) {
+                if (selectedIndex != 0) {
                     onHomeClicked()
                 }
             },
@@ -69,7 +74,7 @@ private fun NavigationBarComponent(
                 Icon(
                     painter = painterResource(R.drawable.home),
                     contentDescription = stringResource(R.string.home),
-                    tint = if (selectedChild is RootComponent.Child.SongList) {
+                    tint = if (selectedIndex == 0) {
                         Color.Green
                     } else {
                         Color.DarkGray
@@ -83,9 +88,9 @@ private fun NavigationBarComponent(
             )
         )
         NavigationBarItem(
-            selected = selectedChild is RootComponent.Child.Favourite,
+            selected = selectedIndex == 1,
             onClick = {
-                if (selectedChild !is RootComponent.Child.Favourite) {
+                if (selectedIndex != 1) {
                     onFavouriteClicked()
                 }
             },
@@ -93,7 +98,7 @@ private fun NavigationBarComponent(
                 Icon(
                     imageVector = Icons.Default.FavoriteBorder,
                     contentDescription = stringResource(R.string.favourite),
-                    tint = if (selectedChild is RootComponent.Child.Favourite) {
+                    tint = if (selectedIndex == 1) {
                         Color.Green
                     } else {
                         Color.DarkGray

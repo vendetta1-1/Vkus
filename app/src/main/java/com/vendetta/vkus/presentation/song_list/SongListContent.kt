@@ -6,7 +6,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,8 +48,7 @@ import com.vendetta.vkus.core.toImageBitmap
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SongListContent(
-    component: SongListComponent,
-    paddingValues: PaddingValues,
+    component: SongListComponent
 ) {
     val model by component.model.collectAsState()
     val launcher = rememberLauncherForActivityResult(
@@ -63,7 +61,6 @@ fun SongListContent(
     )
 
     Scaffold(
-        modifier = Modifier.padding(paddingValues),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {

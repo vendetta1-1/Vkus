@@ -7,11 +7,12 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.vendetta.domain.entity.SongEntity
 import com.vendetta.domain.usecase.ChangeLikeStatusUseCase
 import com.vendetta.vkus.presentation.player.PlayerStore.Intent
+import com.vendetta.vkus.presentation.player.PlayerStore.Label
 import com.vendetta.vkus.presentation.player.PlayerStore.State
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-interface PlayerStore : Store<Intent, State, Nothing> {
+interface PlayerStore : Store<Intent, State, Label> {
 
     data class State(
         val nowPlaying: SongEntity,
@@ -23,24 +24,30 @@ interface PlayerStore : Store<Intent, State, Nothing> {
     )
 
     sealed interface Intent {
-        data class ChangeLikeStatus(val song: SongEntity) : Intent
         data object ResumeOrPause : Intent
+        data object OnDismiss : Intent
+        data class ChangeLikeStatus(val song: SongEntity) : Intent
         data class SeekToNext(val nextSong: SongEntity) : Intent
         data class SeekToPrevious(val previousSong: SongEntity) : Intent
+    }
+
+    sealed interface Label {
+        data object OnDismiss : Label
     }
 }
 
 class PlayerFactory @Inject constructor(
     private val storeFactory: StoreFactory,
     private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
+    //another useCases...
 ) {
 
-    fun create(song: SongEntity, nextSong: SongEntity, previousSong: SongEntity): PlayerStore =
-        object : PlayerStore, Store<Intent, State, Nothing> by storeFactory.create(
+    fun create(currentSong: SongEntity, nextSong: SongEntity, previousSong: SongEntity): PlayerStore =
+        object : PlayerStore, Store<Intent, State, Label> by storeFactory.create(
             name = STORE_NAME,
             initialState = State(
-                nowPlaying = song,
-                isFavourite = song.isFavourite,
+                nowPlaying = currentSong,
+                isFavourite = currentSong.isFavourite,
                 nextSong = nextSong,
                 previousSong = previousSong
             ),
@@ -59,8 +66,7 @@ class PlayerFactory @Inject constructor(
     }
 
     private inner class Executor :
-        CoroutineExecutor<Intent, Action, State, Message, Nothing>() {
-
+        CoroutineExecutor<Intent, Action, State, Message, Label>() {
         override fun executeIntent(intent: Intent) {
             when (intent) {
                 is Intent.ChangeLikeStatus -> {
@@ -81,6 +87,8 @@ class PlayerFactory @Inject constructor(
                 is Intent.SeekToPrevious -> {
                     dispatch(Message.SeekToPrevious(state().previousSong))
                 }
+
+                Intent.OnDismiss -> publish(Label.OnDismiss)
             }
         }
     }

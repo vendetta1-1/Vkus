@@ -18,7 +18,8 @@ import javax.inject.Inject
 interface SongListStore : Store<Intent, State, Nothing> {
 
     data class State(
-        val songs: List<SongEntity> = listOf(), val nowPlayingSong: SongEntity? = null
+        val songs: List<SongEntity> = listOf(),
+        val nowPlayingSong: SongEntity? = null
     )
 
     sealed interface Intent {
