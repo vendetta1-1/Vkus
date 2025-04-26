@@ -51,14 +51,6 @@ class DefaultRootComponent @AssistedInject constructor(
         navigation.select(index = index)
     }
 
-    override fun selectSongList() {
-        selectPage(0)
-    }
-
-    override fun selectFavourite() {
-        selectPage(1)
-    }
-
     @Serializable
     private sealed interface PageConfig {
 

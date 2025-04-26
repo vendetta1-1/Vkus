@@ -11,10 +11,6 @@ interface RootComponent {
 
     fun selectPage(index: Int)
 
-    fun selectSongList()
-
-    fun selectFavourite()
-
     sealed interface Page {
         data class Favourite(val component: FavouriteComponent) : Page
         data class SongList(val component: SongListComponent) : Page

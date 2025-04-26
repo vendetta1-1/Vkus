@@ -13,12 +13,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.arkivanov.decompose.extensions.compose.pages.ChildPages
 import com.arkivanov.decompose.extensions.compose.pages.PagesScrollAnimation
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vendetta.vkus.R
+import com.vendetta.vkus.core.RoundedHome
 import com.vendetta.vkus.presentation.favourite.FavouriteContent
 import com.vendetta.vkus.presentation.song_list.SongListContent
 
@@ -29,11 +29,32 @@ fun RootContent(
     val pages = component.pages.subscribeAsState()
     Scaffold(
         bottomBar = {
-            NavigationBarComponent(
-                onHomeClicked = component::selectSongList,
-                onFavouriteClicked = component::selectFavourite,
-                selectedIndex = pages.value.selectedIndex
-            )
+            NavigationBar {
+                pages.value.items.forEachIndexed { index, item ->
+                    NavigationBarItem(
+                        selected = pages.value.selectedIndex == index,
+                        onClick = { component.selectPage(index) },
+                        icon = {
+                            Icon(
+                                imageVector = when (item.instance!!) {
+                                    is RootComponent.Page.Favourite -> Icons.Filled.FavoriteBorder
+                                    is RootComponent.Page.SongList -> Icons.Filled.RoundedHome
+                                },
+                                contentDescription = when (item.instance!!) {
+                                    is RootComponent.Page.Favourite -> stringResource(R.string.favourite)
+                                    is RootComponent.Page.SongList -> stringResource(R.string.home)
+                                },
+                                tint = if (index == pages.value.selectedIndex) Color.Green else Color.DarkGray
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = Color.Transparent,
+                            selectedIconColor = Color.Transparent,
+                            unselectedIconColor = Color.Transparent
+                        )
+                    )
+                }
+            }
         }
     ) { values ->
         ChildPages(
@@ -52,64 +73,6 @@ fun RootContent(
                     is RootComponent.Page.SongList -> SongListContent(page.component)
                 }
             }
-        )
-    }
-}
-
-@Composable
-private fun NavigationBarComponent(
-    onHomeClicked: () -> Unit,
-    onFavouriteClicked: () -> Unit,
-    selectedIndex: Int
-) {
-    NavigationBar {
-        NavigationBarItem(
-            selected = selectedIndex == 0,
-            onClick = {
-                if (selectedIndex != 0) {
-                    onHomeClicked()
-                }
-            },
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.home),
-                    contentDescription = stringResource(R.string.home),
-                    tint = if (selectedIndex == 0) {
-                        Color.Green
-                    } else {
-                        Color.DarkGray
-                    }
-                )
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = Color.Transparent,
-                unselectedIconColor = Color.Transparent
-            )
-        )
-        NavigationBarItem(
-            selected = selectedIndex == 1,
-            onClick = {
-                if (selectedIndex != 1) {
-                    onFavouriteClicked()
-                }
-            },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = stringResource(R.string.favourite),
-                    tint = if (selectedIndex == 1) {
-                        Color.Green
-                    } else {
-                        Color.DarkGray
-                    }
-                )
-            },
-            colors = NavigationBarItemDefaults.colors(
-                indicatorColor = Color.Transparent,
-                selectedIconColor = Color.Transparent,
-                unselectedIconColor = Color.Transparent
-            )
         )
     }
 }
