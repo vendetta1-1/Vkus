@@ -20,7 +20,7 @@ import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.vendetta.vkus.R
 import com.vendetta.vkus.core.RoundedHome
 import com.vendetta.vkus.presentation.favourite.FavouriteContent
-import com.vendetta.vkus.presentation.song_list.SongListContent
+import com.vendetta.vkus.presentation.home.HomeContent
 
 @Composable
 fun RootContent(
@@ -38,11 +38,11 @@ fun RootContent(
                             Icon(
                                 imageVector = when (item.instance!!) {
                                     is RootComponent.Page.Favourite -> Icons.Filled.FavoriteBorder
-                                    is RootComponent.Page.SongList -> Icons.Filled.RoundedHome
+                                    is RootComponent.Page.Home -> Icons.Filled.RoundedHome
                                 },
                                 contentDescription = when (item.instance!!) {
                                     is RootComponent.Page.Favourite -> stringResource(R.string.favourite)
-                                    is RootComponent.Page.SongList -> stringResource(R.string.home)
+                                    is RootComponent.Page.Home -> stringResource(R.string.home)
                                 },
                                 tint = if (index == pages.value.selectedIndex) Color.Green else Color.DarkGray
                             )
@@ -70,7 +70,7 @@ fun RootContent(
             pageContent = { _, page ->
                 when (page) {
                     is RootComponent.Page.Favourite -> FavouriteContent(page.component)
-                    is RootComponent.Page.SongList -> SongListContent(page.component)
+                    is RootComponent.Page.Home -> HomeContent(page.component)
                 }
             }
         )

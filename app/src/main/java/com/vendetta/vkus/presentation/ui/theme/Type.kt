@@ -2,33 +2,56 @@ package com.vendetta.vkus.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.intl.LocaleList
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
+import com.vendetta.vkus.R
 
-// Set of Material typography styles to start with
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontSize = 32.sp,
+        fontFamily = FontFamily(Font(R.font.comfortaa)),
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        localeList = LocaleList.current,
+        fontStyle = FontStyle.Normal,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.Both,
+            mode = LineHeightStyle.Mode.Fixed
+        ),
+        letterSpacing = 1.sp,
+        lineHeight = 2.sp,
+    ),
+    bodyMedium = TextStyle(
+        fontSize = 16.sp,
+        fontFamily = FontFamily(Font(R.font.comfortaa)),
+        fontWeight = FontWeight.Medium,
+        localeList = LocaleList.current,
+        fontStyle = FontStyle.Normal,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.Both,
+            mode = LineHeightStyle.Mode.Fixed
+        ),
+        letterSpacing = 1.sp,
+        lineHeight = 2.sp,
+    ),
+    bodySmall = TextStyle(
+        fontSize = 12.sp,
+        fontFamily = FontFamily(Font(R.font.comfortaa)),
+        fontWeight = FontWeight.Medium,
+        localeList = LocaleList.current,
+        fontStyle = FontStyle.Normal,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.Both,
+            mode = LineHeightStyle.Mode.Fixed
+        ),
+        letterSpacing = 1.sp,
+        lineHeight = 2.sp,
     )
-    */
 )

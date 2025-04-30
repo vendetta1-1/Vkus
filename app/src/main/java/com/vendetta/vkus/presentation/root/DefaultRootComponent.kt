@@ -8,7 +8,7 @@ import com.arkivanov.decompose.router.pages.childPages
 import com.arkivanov.decompose.router.pages.select
 import com.arkivanov.decompose.value.Value
 import com.vendetta.vkus.presentation.favourite.DefaultFavouriteComponent
-import com.vendetta.vkus.presentation.song_list.DefaultSongListComponent
+import com.vendetta.vkus.presentation.home.DefaultHomeComponent
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
 class DefaultRootComponent @AssistedInject constructor(
     @Assisted("componentContext") componentContext: ComponentContext,
     private val favouriteComponentFactory: DefaultFavouriteComponent.Factory,
-    private val songListComponentFactory: DefaultSongListComponent.Factory
+    private val homeComponentFactory: DefaultHomeComponent.Factory
 ) : RootComponent, ComponentContext by componentContext {
 
     private val navigation = PagesNavigation<PageConfig>()
@@ -28,20 +28,20 @@ class DefaultRootComponent @AssistedInject constructor(
         handleBackButton = true,
         initialPages = {
             Pages(
-                items = listOf<PageConfig>(PageConfig.SongList, PageConfig.Favourite),
+                items = listOf<PageConfig>(PageConfig.Home, PageConfig.Favourite),
                 selectedIndex = 0
             )
         },
         childFactory = { config, componentContext ->
             when (config) {
                 PageConfig.Favourite -> {
-                    val component = favouriteComponentFactory.create(componentContext)
+                    val component = favouriteComponentFactory(componentContext)
                     RootComponent.Page.Favourite(component)
                 }
 
-                PageConfig.SongList -> {
-                    val component = songListComponentFactory.create(componentContext)
-                    RootComponent.Page.SongList(component)
+                PageConfig.Home -> {
+                    val component = homeComponentFactory(componentContext)
+                    RootComponent.Page.Home(component)
                 }
             }
         }
@@ -55,7 +55,7 @@ class DefaultRootComponent @AssistedInject constructor(
     private sealed interface PageConfig {
 
         @Serializable
-        data object SongList : PageConfig
+        data object Home : PageConfig
 
         @Serializable
         data object Favourite : PageConfig
@@ -63,7 +63,7 @@ class DefaultRootComponent @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(
+        operator fun invoke(
             @Assisted("componentContext") componentContext: ComponentContext
         ): DefaultRootComponent
     }

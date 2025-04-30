@@ -1,4 +1,4 @@
-package com.vendetta.vkus.presentation.song_list
+package com.vendetta.vkus.presentation.home
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -32,6 +32,7 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,15 +41,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.media3.common.MimeTypes
 import com.vendetta.domain.entity.SongEntity
+import com.vendetta.vkus.R
 import com.vendetta.vkus.core.toImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SongListContent(
-    component: SongListComponent
+fun HomeContent(
+    component: HomeComponent
 ) {
     val model by component.model.collectAsState()
     val launcher = rememberLauncherForActivityResult(
@@ -76,21 +79,27 @@ fun SongListContent(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Моя музыка")
-                }
+                    Text(
+                        text = stringResource(R.string.home),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     ) { values ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(values)
+                .padding(values),
         ) {
             items(
                 items = model.songs,
                 key = { it.id }
             ) { song ->
-
                 val dismissState = rememberSwipeToDismissBoxState(
                     confirmValueChange = { value ->
                         val isDismissed = value in setOf(
@@ -98,7 +107,7 @@ fun SongListContent(
                         )
 
                         if (isDismissed) {
-                            component.deleteSong(song)
+                            component.swipeSong(song)
                         }
 
                         isDismissed
@@ -107,7 +116,9 @@ fun SongListContent(
 
                 SwipeToDismissBox(
                     state = dismissState,
-                    backgroundContent = {}
+                    backgroundContent = {},
+                    enableDismissFromStartToEnd = false,
+                    enableDismissFromEndToStart = true
                 ) {
                     SongListItem(
                         songEntity = song,
@@ -144,15 +155,25 @@ private fun SongListItem(
                 contentDescription = songEntity.songName,
                 modifier = Modifier
                     .size(50.dp)
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(
+                        RoundedCornerShape(20.dp)
+                    )
             )
             Spacer(modifier = Modifier.width(10.dp))
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center,
             ) {
-                Text(text = songEntity.songName)
-                Text(text = songEntity.artistName)
+                Text(
+                    text = songEntity.songName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = songEntity.artistName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
             }
 
             IconButton(
@@ -161,8 +182,16 @@ private fun SongListItem(
                 }
             ) {
                 Icon(
-                    imageVector = if (songEntity.isFavourite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                    tint = if (songEntity.isFavourite) Color.Green else Color.DarkGray,
+                    imageVector = if (songEntity.isFavourite) {
+                        Icons.Default.Favorite
+                    } else {
+                        Icons.Default.FavoriteBorder
+                    },
+                    tint = if (songEntity.isFavourite) {
+                        Color.Green
+                    } else {
+                        Color.DarkGray
+                    },
                     contentDescription = null
                 )
             }

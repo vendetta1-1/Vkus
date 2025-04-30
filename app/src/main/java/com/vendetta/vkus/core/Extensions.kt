@@ -42,9 +42,13 @@ val Icons.Filled.RoundedHome: ImageVector
         ).apply {
             group {
                 path(
-                    fill = SolidColor(Color(0x00000000)), stroke = SolidColor(Color(0xFF171C26)),
-                    strokeLineWidth = 1.5f, strokeLineCap = Butt, strokeLineJoin = Miter,
-                    strokeLineMiter = 4.0f, pathFillType = NonZero
+                    fill = SolidColor(Color(0x00000000)),
+                    stroke = SolidColor(Color(0xFF171C26)),
+                    strokeLineWidth = 1.5f,
+                    strokeLineCap = Butt,
+                    strokeLineJoin = Miter,
+                    strokeLineMiter = 4.0f,
+                    pathFillType = NonZero
                 ) {
                     moveTo(9.9f, 19.19f)
                     curveTo(9.9f, 18.34f, 10.59f, 17.66f, 11.43f, 17.66f)

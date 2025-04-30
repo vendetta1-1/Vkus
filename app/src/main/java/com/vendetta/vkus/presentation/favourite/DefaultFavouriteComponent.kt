@@ -30,7 +30,7 @@ class DefaultFavouriteComponent @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(
+        operator fun invoke(
             @Assisted("componentContext") componentContext: ComponentContext
         ): DefaultFavouriteComponent
     }

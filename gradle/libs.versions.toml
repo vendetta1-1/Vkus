@@ -1,7 +1,6 @@
 [versions]
 agp = "8.9.2"
 dagger = "2.56.1"
-gson = "2.12.1"
 junit = "5.12.1"
 junitPlatformSuite = "1.12.1"
 kotlin = "2.1.20"
@@ -28,7 +27,6 @@ mviKotlin = "4.3.0"
 javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
-gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 junit = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }

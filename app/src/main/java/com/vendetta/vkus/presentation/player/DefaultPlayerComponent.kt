@@ -33,7 +33,7 @@ class DefaultPlayerComponent @AssistedInject constructor(
     init {
         componentScope().launch {
             store.labels.collect {
-                when(it){
+                when (it) {
                     PlayerStore.Label.OnDismiss -> onDismiss
                 }
             }
@@ -65,7 +65,7 @@ class DefaultPlayerComponent @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(
+        operator fun invoke(
             @Assisted("componentContext") componentContext: ComponentContext,
             @Assisted("currentSong") currentSong: SongEntity,
             @Assisted("nextSong") nextSong: SongEntity,

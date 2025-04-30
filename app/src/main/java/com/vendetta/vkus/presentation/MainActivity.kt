@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         val rootComponentFactory = appComponent.getRootComponentFactory()
         setContent {
             VkusTheme {
-                RootContent(component = rootComponentFactory.create(defaultComponentContext()))
+                RootContent(component = rootComponentFactory(defaultComponentContext()))
             }
         }
     }

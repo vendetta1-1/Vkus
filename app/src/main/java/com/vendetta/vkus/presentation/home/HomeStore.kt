@@ -1,4 +1,4 @@
-package com.vendetta.vkus.presentation.song_list
+package com.vendetta.vkus.presentation.home
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
@@ -10,12 +10,12 @@ import com.vendetta.domain.usecase.AddSongUseCase
 import com.vendetta.domain.usecase.ChangeLikeStatusUseCase
 import com.vendetta.domain.usecase.DeleteSongUseCase
 import com.vendetta.domain.usecase.GetSongsUseCase
-import com.vendetta.vkus.presentation.song_list.SongListStore.Intent
-import com.vendetta.vkus.presentation.song_list.SongListStore.State
+import com.vendetta.vkus.presentation.home.HomeStore.Intent
+import com.vendetta.vkus.presentation.home.HomeStore.State
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-interface SongListStore : Store<Intent, State, Nothing> {
+interface HomeStore : Store<Intent, State, Nothing> {
 
     data class State(
         val songs: List<SongEntity> = listOf(),
@@ -31,16 +31,16 @@ interface SongListStore : Store<Intent, State, Nothing> {
 
 }
 
-class SongListFactory @Inject constructor(
+class HomeFactory @Inject constructor(
     private val storeFactory: StoreFactory,
     private val getSongsUseCase: GetSongsUseCase,
-    private val deleteSongUseCase: DeleteSongUseCase,
     private val addSongUseCase: AddSongUseCase,
-    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase
+    private val changeLikeStatusUseCase: ChangeLikeStatusUseCase,
+    private val deleteSongsUseCase: DeleteSongUseCase
 ) {
 
-    fun create(): SongListStore =
-        object : SongListStore, Store<Intent, State, Nothing> by storeFactory.create(
+    fun create(): HomeStore =
+        object : HomeStore, Store<Intent, State, Nothing> by storeFactory.create(
             name = STORE_NAME,
             initialState = State(),
             reducer = ReducerImpl,
@@ -55,9 +55,9 @@ class SongListFactory @Inject constructor(
     private sealed interface Message {
         data class SongsLoaded(val songs: List<SongEntity>) : Message
         data class PlaySong(val song: SongEntity) : Message
-        data class DeleteSong(val song: SongEntity) : Message
         data class ChangeLikeStatus(val song: SongEntity) : Message
         data class AddSong(val song: SongEntity) : Message
+        data class DeleteSong(val song: SongEntity) : Message
     }
 
     private inner class BootstrapperImpl : CoroutineBootstrapper<Action>() {
@@ -92,7 +92,7 @@ class SongListFactory @Inject constructor(
 
                 is Intent.DeleteSong -> {
                     scope.launch {
-                        deleteSongUseCase(intent.song)
+                        deleteSongsUseCase(intent.song)
                     }
                     dispatch(Message.DeleteSong(intent.song))
                 }
@@ -125,15 +125,6 @@ class SongListFactory @Inject constructor(
                     )
                 }
 
-                is Message.DeleteSong -> {
-                    val newList = songs.toMutableList().apply {
-                        remove(msg.song)
-                    }
-                    copy(
-                        songs = newList
-                    )
-                }
-
                 is Message.PlaySong -> copy(nowPlayingSong = msg.song)
 
                 is Message.SongsLoaded -> {
@@ -144,6 +135,14 @@ class SongListFactory @Inject constructor(
                     copy(
                         songs = songs.toMutableList().apply {
                             add(msg.song)
+                        }
+                    )
+                }
+
+                is Message.DeleteSong -> {
+                    copy(
+                        songs = songs.toMutableList().apply {
+                            remove(msg.song)
                         }
                     )
                 }
